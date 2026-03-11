@@ -1423,7 +1423,7 @@ function renderExercises() {
     if (isStopwatch) {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="flex:1;text-align:center">COUNTDOWN</span><span class="sh-done" style="min-width:72px"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else if (ex.type === 'time') {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleTimeUnit()" style="cursor:pointer">TIME (' + timeLabel() + ')</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleWeightUnit()" style="cursor:pointer">' + weightLabel().toUpperCase() + '</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     }
