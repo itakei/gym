@@ -1233,9 +1233,69 @@ let state = {
 
 const STORAGE_KEY = 'workoutCurrent';
 const HISTORY_KEY = 'workoutHistory';
+const UNITS_KEY = 'workoutUnits';
+
+// ============ UNIT PREFERENCES ============
+const KG_TO_LBS = 2.20462;
+let units = { weight: 'kg', time: 'sec' };
+
+function loadUnits() {
+  try {
+    const saved = localStorage.getItem(UNITS_KEY);
+    if (saved) Object.assign(units, JSON.parse(saved));
+  } catch(e) {}
+}
+
+function saveUnits() {
+  localStorage.setItem(UNITS_KEY, JSON.stringify(units));
+}
+
+function toggleWeightUnit() {
+  units.weight = units.weight === 'kg' ? 'lbs' : 'kg';
+  saveUnits();
+  renderAll();
+}
+
+function toggleTimeUnit() {
+  units.time = units.time === 'sec' ? 'min' : 'sec';
+  saveUnits();
+  renderAll();
+}
+
+function displayWeight(kg) {
+  if (units.weight === 'lbs') return Math.round(kg * KG_TO_LBS * 2) / 2;
+  return kg;
+}
+
+function inputToKg(val) {
+  if (units.weight === 'lbs') return Math.round(val / KG_TO_LBS * 10) / 10;
+  return val;
+}
+
+function weightStep() {
+  return units.weight === 'lbs' ? 5 : 2.5;
+}
+
+function displayTime(sec) {
+  if (units.time === 'min') return Math.round(sec / 6) / 10;
+  return sec;
+}
+
+function inputToSec(val) {
+  if (units.time === 'min') return Math.round(val * 60);
+  return Math.round(val);
+}
+
+function timeStep() {
+  return units.time === 'min' ? 0.5 : 10;
+}
+
+function weightLabel() { return units.weight; }
+function timeLabel() { return units.time; }
 
 // ============ INIT ============
 function init() {
+  loadUnits();
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
@@ -1365,7 +1425,7 @@ function renderExercises() {
     } else if (ex.type === 'time') {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">WEIGHT</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleWeightUnit()" style="cursor:pointer">' + weightLabel().toUpperCase() + '</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     }
 
     ex.sets.forEach((set, si) => {
@@ -1437,11 +1497,11 @@ function renderSetRow(ei, si, set, ex) {
     return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
       '<span class="set-label">' + displayLabel + '</span>' +
       '<div class="seconds-input-group">' +
-        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',-10)">&minus;</button>' +
-        '<input type="number" class="seconds-stepper-input" value="' + totalSec + '" ' +
-          'onchange="setSeconds(' + ei + ',' + si + ',this.value)" inputmode="numeric">' +
-        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',10)">+</button>' +
-        '<span style="font-size:0.7rem;color:var(--text-dim);margin-left:4px">sec</span>' +
+        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',-timeStep())">&minus;</button>' +
+        '<input type="number" class="seconds-stepper-input" value="' + displayTime(totalSec) + '" ' +
+          'onchange="setTimeFromInput(' + ei + ',' + si + ',this.value)" inputmode="decimal">' +
+        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',timeStep())">+</button>' +
+        '<span style="font-size:0.7rem;color:var(--text-dim);margin-left:4px;cursor:pointer" onclick="toggleTimeUnit()">' + timeLabel() + '</span>' +
       '</div>' +
       '<button class="done-btn' + (set.done ? ' checked' : '') + '" onclick="toggleDone(' + ei + ',' + si + ')">' +
         (set.done ? '\u2713' : '\u25CB') +
@@ -1453,11 +1513,11 @@ function renderSetRow(ei, si, set, ex) {
   return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
     '<span class="set-label' + labelClass + '">' + displayLabel + '</span>' +
     '<div class="input-group">' +
-      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',-2.5)">&minus;</button>' +
-      '<input type="number" class="stepper-input" value="' + set.weight + '" step="2.5" ' +
-        'onchange="setVal(' + ei + ',' + si + ',\'weight\',this.value)" inputmode="decimal">' +
-      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',2.5)">+</button>' +
-      '<span class="unit-label">kg</span>' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',-weightStep())">&minus;</button>' +
+      '<input type="number" class="stepper-input" value="' + displayWeight(set.weight) + '" step="' + weightStep() + '" ' +
+        'onchange="setWeightFromInput(' + ei + ',' + si + ',this.value)" inputmode="decimal">' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',weightStep())">+</button>' +
+      '<span class="unit-label" onclick="toggleWeightUnit()" style="cursor:pointer">' + weightLabel() + '</span>' +
     '</div>' +
     '<div class="input-group">' +
       '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'reps\',-1)">&minus;</button>' +
@@ -1484,17 +1544,37 @@ function setVal(ei, si, field, val) {
   }
 }
 
+function setWeightFromInput(ei, si, val) {
+  const num = parseFloat(val);
+  if (!isNaN(num) && num >= 0) {
+    state.exercises[ei].sets[si].weight = inputToKg(num);
+    saveState();
+  }
+}
+
 function stepVal(ei, si, field, delta) {
   const set = state.exercises[ei].sets[si];
-  const newVal = Math.max(0, (set[field] || 0) + delta);
-  set[field] = Math.round(newVal * 10) / 10;
+  if (field === 'weight') {
+    const deltaKg = units.weight === 'lbs' ? delta / KG_TO_LBS : delta;
+    const newVal = Math.max(0, (set.weight || 0) + deltaKg);
+    set.weight = Math.round(newVal * 10) / 10;
+  } else {
+    const newVal = Math.max(0, (set[field] || 0) + delta);
+    set[field] = Math.round(newVal * 10) / 10;
+  }
   saveState();
   const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
   if (rows.length) {
     const inputs = rows[0].querySelectorAll('.stepper-input');
-    if (field === 'weight' && inputs[0]) inputs[0].value = set.weight;
+    if (field === 'weight' && inputs[0]) inputs[0].value = displayWeight(set.weight);
     if (field === 'reps' && inputs[1]) inputs[1].value = set.reps;
   }
+}
+
+function setTimeFromInput(ei, si, val) {
+  const num = parseFloat(val) || 0;
+  state.exercises[ei].sets[si].seconds = Math.max(0, inputToSec(num));
+  saveState();
 }
 
 function setSeconds(ei, si, val) {
@@ -1505,12 +1585,13 @@ function setSeconds(ei, si, val) {
 
 function stepSeconds(ei, si, delta) {
   const set = state.exercises[ei].sets[si];
-  set.seconds = Math.max(0, (set.seconds || 0) + delta);
+  const deltaSec = units.time === 'min' ? delta * 60 : delta;
+  set.seconds = Math.max(0, (set.seconds || 0) + deltaSec);
   saveState();
   const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
   if (rows.length) {
     const input = rows[0].querySelector('.seconds-stepper-input');
-    if (input) input.value = set.seconds;
+    if (input) input.value = displayTime(set.seconds);
   }
 }
 
@@ -1817,14 +1898,15 @@ function buildSummary(durationMin) {
         const sec = s.seconds % 60;
         lines.push('  ' + m + ':' + String(sec).padStart(2, '0'));
       } else {
-        lines.push('  ' + s.weight + 'kg x ' + s.reps);
+        lines.push('  ' + displayWeight(s.weight) + weightLabel() + ' x ' + s.reps);
         totalVolume += s.weight * s.reps;
       }
       totalSets++;
     });
   });
   lines.push('');
-  lines.push('Total sets: ' + totalSets + ' | Volume: ' + Math.round(totalVolume) + ' kg');
+  const volDisplay = units.weight === 'lbs' ? Math.round(totalVolume * KG_TO_LBS) : Math.round(totalVolume);
+  lines.push('Total sets: ' + totalSets + ' | Volume: ' + volDisplay + ' ' + weightLabel());
   if (state.notes) lines.push('Notes: ' + state.notes);
   return lines.join('\n');
 }
@@ -1841,7 +1923,7 @@ function showSummaryOverlay(exportData, summary, durationMin) {
     '<div style="margin:12px 0">' +
       '<span class="summary-stat"><span class="val">' + durationMin + '</span><br><span class="lbl">minutes</span></span>' +
       '<span class="summary-stat"><span class="val">' + totalSets + '</span><br><span class="lbl">sets</span></span>' +
-      '<span class="summary-stat"><span class="val">' + Math.round(totalVolume) + '</span><br><span class="lbl">kg volume</span></span>' +
+      '<span class="summary-stat"><span class="val">' + (units.weight === 'lbs' ? Math.round(totalVolume * KG_TO_LBS) : Math.round(totalVolume)) + '</span><br><span class="lbl">' + weightLabel() + ' volume</span></span>' +
     '</div>' +
     '<div class="summary-block" id="summary-text">' + esc(summary) + '</div>' +
     '<button class="copy-btn" id="copy-summary-btn" onclick="copySummary()">Copy Summary Text</button>' +
