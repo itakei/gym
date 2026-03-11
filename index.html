@@ -1060,20 +1060,18 @@ const STOPWATCH_EXERCISES = [
 // Active stopwatch state (not persisted — resets on refresh)
 const activeStopwatches = {};
 
-function editStopwatchTime(ei, si) {
+function editStopwatchTarget(ei, si) {
   const key = ei + '-' + si;
-  // Don't allow editing while running
   if (activeStopwatches[key] && activeStopwatches[key].running) return;
   const set = state.exercises[ei].sets[si];
-  const current = set.seconds || 0;
-  const input = prompt('Enter time in seconds:', current);
+  if (set.done) return; // already recorded
+  const current = set.targetSeconds || 60;
+  const input = prompt('Set target seconds:', current);
   if (input === null) return;
   const val = parseInt(input);
-  if (isNaN(val) || val < 0) return;
+  if (isNaN(val) || val <= 0) return;
+  set.targetSeconds = val;
   set.seconds = val;
-  if (val > 0 && !set.done) {
-    set.done = true;
-  }
   saveState();
   renderExercises();
 }
@@ -1081,10 +1079,10 @@ function editStopwatchTime(ei, si) {
 function toggleStopwatch(ei, si) {
   const key = ei + '-' + si;
   const set = state.exercises[ei].sets[si];
-  if (set.done) return; // already finished
+  if (set.done) return;
 
   if (activeStopwatches[key] && activeStopwatches[key].running) {
-    // STOP — record time
+    // STOP — record how long they actually held
     clearInterval(activeStopwatches[key].interval);
     const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
     set.seconds = elapsed;
@@ -1092,27 +1090,38 @@ function toggleStopwatch(ei, si) {
     activeStopwatches[key].running = false;
     saveState();
     renderExercises();
-    // Start rest timer
     const restSec = state.exercises[ei].restSec;
     if (restSec > 0) startRestTimer(restSec);
   } else {
-    // START — begin counting
+    // START — countdown from target
+    const targetSec = set.targetSeconds || 60;
     activeStopwatches[key] = {
       startTime: Date.now(),
+      targetSec: targetSec,
       running: true,
       interval: setInterval(() => {
         const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
+        const remaining = Math.max(0, targetSec - elapsed);
         const display = document.getElementById('sw-display-' + key);
         if (display) {
-          const m = Math.floor(elapsed / 60);
-          const s = elapsed % 60;
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
           display.textContent = m + ':' + String(s).padStart(2, '0');
+          // Change color when past target (counting negative = bonus time)
+          if (remaining <= 0) {
+            display.style.color = 'var(--green)';
+            const bonus = elapsed - targetSec;
+            const bm = Math.floor(bonus / 60);
+            const bs = bonus % 60;
+            display.textContent = '+' + bm + ':' + String(bs).padStart(2, '0');
+          } else if (remaining <= 10) {
+            display.style.color = 'var(--red)';
+          }
         }
-        // Also update button to show it's running
-        const btn = document.getElementById('sw-btn-' + key);
-        if (btn) {
-          btn.textContent = 'STOP';
-          btn.className = 'stopwatch-btn running';
+        // Beep when countdown hits zero
+        if (remaining === 0 && elapsed === targetSec) {
+          playBeep();
+          vibrateDevice();
         }
       }, 100)
     };
@@ -1120,7 +1129,12 @@ function toggleStopwatch(ei, si) {
     const btn = document.getElementById('sw-btn-' + key);
     if (btn) { btn.textContent = 'STOP'; btn.className = 'stopwatch-btn running'; }
     const display = document.getElementById('sw-display-' + key);
-    if (display) { display.textContent = '0:00'; display.className = 'stopwatch-display running'; }
+    if (display) {
+      const m = Math.floor(targetSec / 60);
+      const s = targetSec % 60;
+      display.textContent = m + ':' + String(s).padStart(2, '0');
+      display.className = 'stopwatch-display running';
+    }
   }
 }
 
@@ -1332,7 +1346,7 @@ function renderExercises() {
     // Column headers
     const hasRemovable = ex.sets.length > 1;
     if (isStopwatch) {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="font-size:0.55rem">TARGET</span><span class="sh-col" style="flex:1;text-align:center;font-size:0.55rem">TIMER</span><span class="sh-done" style="min-width:72px"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="flex:1;text-align:center">COUNTDOWN</span><span class="sh-done" style="min-width:72px"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else if (ex.type === 'time') {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else {
@@ -1370,20 +1384,27 @@ function renderSetRow(ei, si, set, ex) {
     if (isStopwatch) {
       const swKey = ei + '-' + si;
       const isRunning = activeStopwatches[swKey] && activeStopwatches[swKey].running;
-      const btnClass = set.done ? 'stopped' : (isRunning ? 'running' : 'ready');
-      const btnText = set.done ? 'Done' : (isRunning ? 'STOP' : 'START');
-      const displayClass = isRunning ? ' running' : '';
       const targetSec = set.targetSeconds || 60;
-      const actualSec = set.done ? (set.seconds || 0) : 0;
-      const elapsed = isRunning ? 0 : actualSec; // live update handled by interval
-      const m = Math.floor(elapsed / 60);
-      const s = elapsed % 60;
+      // Display: countdown remaining when running/ready, or recorded result when done
+      let displaySec;
+      if (set.done) {
+        displaySec = set.seconds || 0;
+      } else if (isRunning) {
+        displaySec = targetSec; // will be updated by interval
+      } else {
+        displaySec = targetSec;
+      }
+      const m = Math.floor(displaySec / 60);
+      const s = displaySec % 60;
       const timeStr = m + ':' + String(s).padStart(2, '0');
-      const targetStr = targetSec + 's';
-      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '" style="flex-wrap:wrap;gap:6px">' +
+
+      const btnClass = set.done ? 'stopped' : (isRunning ? 'running' : 'ready');
+      const btnText = set.done ? (set.seconds || 0) + 's' : (isRunning ? 'STOP' : 'START');
+      const displayClass = isRunning ? ' running' : (set.done ? '' : '');
+
+      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
         '<span class="set-label">' + displayLabel + '</span>' +
-        '<span style="font-size:0.75rem;color:var(--text-dim);min-width:36px">target ' + targetStr + '</span>' +
-        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTime(' + ei + ',' + si + ')" style="flex:1;text-align:center">' + timeStr + '</span>' +
+        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTarget(' + ei + ',' + si + ')">' + timeStr + '</span>' +
         '<button class="stopwatch-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="toggleStopwatch(' + ei + ',' + si + ')">' + btnText + '</button>' +
         (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
       '</div>';
