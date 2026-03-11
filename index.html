@@ -1060,6 +1060,24 @@ const STOPWATCH_EXERCISES = [
 // Active stopwatch state (not persisted — resets on refresh)
 const activeStopwatches = {};
 
+function editStopwatchTime(ei, si) {
+  const key = ei + '-' + si;
+  // Don't allow editing while running
+  if (activeStopwatches[key] && activeStopwatches[key].running) return;
+  const set = state.exercises[ei].sets[si];
+  const current = set.seconds || 0;
+  const input = prompt('Enter time in seconds:', current);
+  if (input === null) return;
+  const val = parseInt(input);
+  if (isNaN(val) || val < 0) return;
+  set.seconds = val;
+  if (val > 0 && !set.done) {
+    set.done = true;
+  }
+  saveState();
+  renderExercises();
+}
+
 function toggleStopwatch(ei, si) {
   const key = ei + '-' + si;
   const set = state.exercises[ei].sets[si];
@@ -1361,7 +1379,7 @@ function renderSetRow(ei, si, set, ex) {
       const timeStr = m + ':' + String(s).padStart(2, '0');
       return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
         '<span class="set-label">' + displayLabel + '</span>' +
-        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '">' + timeStr + '</span>' +
+        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTime(' + ei + ',' + si + ')">' + timeStr + '</span>' +
         '<button class="stopwatch-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="toggleStopwatch(' + ei + ',' + si + ')">' + btnText + '</button>' +
         (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
       '</div>';
@@ -1860,7 +1878,16 @@ function showHistoryItem(idx) {
     '<h2>' + esc(w.name) + '</h2>' +
     '<div style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px">' + esc(w.date) + ' &mdash; ' + (w.duration_min || 0) + ' min</div>' +
     '<div class="summary-block">' + esc(summary) + '</div>' +
-    '<button class="copy-btn" onclick="copyHistoryJSON(' + idx + ')">Copy as JSON</button>';
+    '<button class="copy-btn" onclick="copyHistoryJSON(' + idx + ')">Copy as JSON</button>' +
+    '<button class="copy-btn" onclick="deleteHistoryItem(' + idx + ')" style="margin-top:6px;background:var(--red);color:#fff">Delete</button>';
+}
+
+function deleteHistoryItem(idx) {
+  if (!confirm('Delete this workout from history?')) return;
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  history.splice(idx, 1);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  showHistory();
 }
 
 async function copyHistoryJSON(idx) {
