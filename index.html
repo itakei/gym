@@ -23,7 +23,7 @@
   --yellow: #fff176;
   --radius: 12px;
   --card-gap: 12px;
-  --btn-min: 52px;
+  --btn-min: 40px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 16px; }
@@ -152,8 +152,8 @@ input {
 .set-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 3px;
+  padding: 6px 8px;
   border-top: 1px solid var(--surface2);
   transition: background 0.2s;
 }
@@ -161,8 +161,8 @@ input {
   background: var(--green-dim);
 }
 .set-row .set-label {
-  width: 28px;
-  font-size: 0.75rem;
+  width: 22px;
+  font-size: 0.7rem;
   color: var(--text-dim);
   text-align: center;
   flex-shrink: 0;
@@ -179,17 +179,14 @@ input {
   min-width: 0;
 }
 .input-group .unit-label {
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  margin-left: 2px;
-  flex-shrink: 0;
+  display: none;
 }
 .stepper-btn {
-  width: var(--btn-min);
-  height: var(--btn-min);
+  width: 36px;
+  height: 36px;
   background: var(--surface3);
   color: var(--text);
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   border-radius: 8px;
   display: flex;
@@ -200,12 +197,12 @@ input {
 }
 .stepper-btn:active { background: var(--accent-dim); }
 .stepper-input {
-  width: 52px;
+  width: 44px;
   text-align: center;
   background: transparent;
   border: none;
   color: var(--text);
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   outline: none;
   -moz-appearance: textfield;
@@ -244,12 +241,12 @@ input {
   min-width: 0;
 }
 .seconds-stepper-input {
-  width: 64px;
+  width: 52px;
   text-align: center;
   background: transparent;
   border: none;
   color: var(--text);
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   outline: none;
   -moz-appearance: textfield;
@@ -259,18 +256,18 @@ input {
 
 /* Done button */
 .done-btn {
-  width: var(--btn-min);
-  height: var(--btn-min);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: var(--surface3);
   color: var(--text-dim);
-  font-size: 1.4rem;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.15s;
-  margin-left: 4px;
+  margin-left: 2px;
 }
 .done-btn.checked {
   background: var(--green);
@@ -280,12 +277,12 @@ input {
 
 /* Remove set button */
 .remove-set-btn {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: transparent;
   color: var(--red);
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -293,7 +290,7 @@ input {
   flex-shrink: 0;
   opacity: 0.6;
   transition: opacity 0.15s;
-  margin-left: 2px;
+  margin-left: 1px;
 }
 .remove-set-btn:active { opacity: 1; background: rgba(239,83,80,0.15); }
 
@@ -503,6 +500,39 @@ input {
   color: var(--accent);
   background: var(--surface2);
   border: 1px dashed var(--accent-dim);
+}
+
+/* Set column headers */
+.set-header {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px 2px;
+  border-top: 1px solid var(--surface2);
+}
+.set-header .sh-label {
+  width: 22px;
+  flex-shrink: 0;
+}
+.set-header .sh-col {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.set-header .sh-done {
+  width: 36px;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+.set-header .sh-remove {
+  width: 24px;
+  flex-shrink: 0;
+  margin-left: 1px;
 }
 
 /* Scrollbar */
@@ -823,6 +853,14 @@ function renderExercises() {
       (completedSets === ex.sets.length ? 'Done' : completedSets + '/' + ex.sets.length);
 
     let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span></div>';
+
+    // Column headers
+    const hasRemovable = ex.sets.length > 1;
+    if (ex.type === 'time') {
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+    } else {
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">WEIGHT</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+    }
 
     ex.sets.forEach((set, si) => {
       html += renderSetRow(ei, si, set, ex);
