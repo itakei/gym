@@ -127,7 +127,7 @@ input {
 .notes-area.show { display: block; }
 
 /* Exercise cards */
-.exercises { padding: 0 12px 120px; display: flex; flex-direction: column; gap: var(--card-gap); }
+.exercises { padding: 0 12px; display: flex; flex-direction: column; gap: var(--card-gap); }
 .exercise-card {
   background: var(--surface);
   border-radius: var(--radius);
@@ -235,6 +235,28 @@ input {
 .time-input:focus { border-color: var(--accent); }
 .time-sep { font-size: 1.1rem; font-weight: 700; }
 
+/* Seconds input for time exercises */
+.seconds-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+.seconds-stepper-input {
+  width: 64px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 700;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.seconds-stepper-input::-webkit-inner-spin-button,
+.seconds-stepper-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
 /* Done button */
 .done-btn {
   width: var(--btn-min);
@@ -256,49 +278,64 @@ input {
 }
 .done-btn:active { transform: scale(0.92); }
 
-/* Add exercise */
-.add-exercise-section { padding: 12px; padding-bottom: 100px; }
+/* Remove set button */
+.remove-set-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--red);
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  margin-left: 2px;
+}
+.remove-set-btn:active { opacity: 1; background: rgba(239,83,80,0.15); }
+
+/* Add set button inside card */
+.add-set-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-top: 1px solid var(--surface2);
+}
+.add-set-btn:active { background: var(--surface2); }
+
+/* Add exercise - big button */
+.add-exercise-section { padding: 16px 12px; padding-bottom: 120px; }
 .add-exercise-btn {
   width: 100%;
+  min-height: 56px;
   padding: 16px;
-  background: var(--surface);
-  color: var(--accent);
-  font-size: 1rem;
-  font-weight: 600;
+  background: var(--accent);
+  color: #000;
+  font-size: 1.15rem;
+  font-weight: 700;
   border-radius: var(--radius);
-  border: 2px dashed var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
 }
-.add-exercise-btn:active { background: var(--surface2); }
-.add-form {
-  display: none;
-  background: var(--surface);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-top: 8px;
+.add-exercise-btn:active { opacity: 0.85; }
+.add-exercise-btn .plus-icon {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
 }
-.add-form.show { display: block; }
-.add-form input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  background: var(--surface2);
-  border: 1px solid var(--surface3);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 1rem;
-  outline: none;
-  margin-bottom: 8px;
-}
-.add-form input[type="text"]:focus { border-color: var(--accent); }
-.add-form-actions { display: flex; gap: 8px; }
-.add-form-actions button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-.btn-confirm { background: var(--accent); color: #000; }
-.btn-cancel { background: var(--surface3); color: var(--text); }
 
 /* Bottom bar */
 .bottom-bar {
@@ -400,6 +437,74 @@ input {
 .history-list li .h-name { color: var(--text-dim); font-size: 0.85rem; }
 .history-empty { color: var(--text-dim); font-size: 0.9rem; text-align: center; padding: 20px; }
 
+/* Exercise Picker Overlay */
+.exercise-picker-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 3000;
+  flex-direction: column;
+}
+.exercise-picker-overlay.show { display: flex; }
+.exercise-picker-header {
+  padding: 12px 12px 0;
+  flex-shrink: 0;
+}
+.exercise-picker-header .picker-top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.exercise-picker-header .picker-cancel-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.exercise-picker-header .picker-search {
+  flex: 1;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 2px solid var(--surface3);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1.05rem;
+  outline: none;
+}
+.exercise-picker-header .picker-search:focus { border-color: var(--accent); }
+.exercise-picker-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 12px 40px;
+}
+.exercise-picker-list .picker-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 16px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.05rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+}
+.exercise-picker-list .picker-item:active { background: var(--accent-dim); }
+.exercise-picker-list .picker-item.custom-item {
+  color: var(--accent);
+  background: var(--surface2);
+  border: 1px dashed var(--accent-dim);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -450,14 +555,9 @@ input {
   <div class="exercises" id="exercises-container"></div>
 
   <div class="add-exercise-section">
-    <button class="add-exercise-btn" id="add-exercise-btn" onclick="showAddForm()">+ Add Exercise</button>
-    <div class="add-form" id="add-form">
-      <input type="text" id="new-exercise-name" placeholder="Exercise name">
-      <div class="add-form-actions">
-        <button class="btn-cancel" onclick="hideAddForm()">Cancel</button>
-        <button class="btn-confirm" onclick="addCustomExercise()">Add</button>
-      </div>
-    </div>
+    <button class="add-exercise-btn" id="add-exercise-btn" onclick="openExercisePicker()">
+      <span class="plus-icon">+</span> Add Exercise
+    </button>
   </div>
 </div>
 
@@ -465,6 +565,17 @@ input {
   <button class="history-btn" onclick="showHistory()">History</button>
   <button class="reset-btn" onclick="resetWorkout()" style="background:var(--surface3);color:var(--orange);font-size:0.9rem;padding:10px 16px;border-radius:var(--radius);">Reset</button>
   <button class="finish-btn" onclick="finishWorkout()">Finish Workout</button>
+</div>
+
+<!-- Exercise Picker Overlay -->
+<div class="exercise-picker-overlay" id="exercise-picker-overlay">
+  <div class="exercise-picker-header">
+    <div class="picker-top-row">
+      <button class="picker-cancel-btn" onclick="closeExercisePicker()">&times;</button>
+      <input type="text" class="picker-search" id="picker-search" placeholder="Search exercises..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+  </div>
+  <div class="exercise-picker-list" id="picker-list"></div>
 </div>
 
 <!-- Summary Overlay -->
@@ -478,6 +589,73 @@ input {
 </div>
 
 <script>
+// ============ EXERCISE LIST ============
+const EXERCISE_LIST = [
+  'Ab Wheel',
+  'Aerobics',
+  'Arnold Press (Dumbbell)',
+  'Back Extension',
+  'Bench Press (Barbell)',
+  'Bench Press (Dumbbell)',
+  'Bent Over One Arm Row (Dumbbell)',
+  'Bicep Curl (Barbell)',
+  'Bicep Curl (Dumbbell)',
+  'Bulgarian Split Squat',
+  'Chest Fly (Dumbbell)',
+  'Chest Press',
+  'Chest Press (Machine)',
+  'Chin Up',
+  'Concentration Curl (Dumbbell)',
+  'Cycling',
+  'Cycling (Indoor)',
+  'Deadhang',
+  'Deadlift (Barbell)',
+  'Deadlift (Dumbbell)',
+  'Elliptical Machine',
+  'Face Pull (Cable)',
+  'Face Pull (TRX)',
+  'Front Raise (Dumbbell)',
+  'Glute Bridge',
+  'Goblet Squat (Kettlebell)',
+  'Hammer Curl (Dumbbell)',
+  'Hip Thrust (Barbell)',
+  'Incline Bench Press (Barbell)',
+  'Incline Bench Press (Dumbbell)',
+  'Incline Curl (Dumbbell)',
+  'Incline Row (Dumbbell)',
+  'Lat Pulldown (Cable)',
+  'Lat Pulldown (Machine)',
+  'Lateral Raise (Dumbbell)',
+  'Leg Press',
+  'Plank',
+  'Preacher Curl (Dumbbell)',
+  'Push Up',
+  'Rear Delt Raise (Dumbbell)',
+  'Reverse Fly (Dumbbell)',
+  'Reverse Plank',
+  'Romanian Deadlift (Barbell)',
+  'Seated Row (Cable)',
+  'Shoulder Press',
+  'Shoulder Press (Machine)',
+  'Side Plank',
+  'Squat (Barbell)',
+  'Squat (Bodyweight)',
+  'Standing Calf Raise (Bodyweight)',
+  'Standing Calf Raise (Dumbbell)',
+  'Triceps Extension',
+  'Triceps Extension (Cable)',
+  'Triceps Extension (Dumbbell)'
+];
+
+const TIME_BASED_EXERCISES = [
+  'Cycling', 'Cycling (Indoor)', 'Elliptical Machine', 'Aerobics',
+  'Plank', 'Side Plank', 'Reverse Plank', 'Deadhang'
+];
+
+function isTimeBased(name) {
+  return TIME_BASED_EXERCISES.includes(name);
+}
+
 // ============ DATA ============
 const WORKOUT_DATE = '2026-03-11';
 const WORKOUT_NAME = 'Heavy Bench Day';
@@ -644,11 +822,14 @@ function renderExercises() {
     const badge = ex.type === 'time' ? 'Warm-up' :
       (completedSets === ex.sets.length ? 'Done' : completedSets + '/' + ex.sets.length);
 
-    let html = `<div class="card-header"><h2>${esc(ex.name)}</h2><span class="badge">${badge}</span></div>`;
+    let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span></div>';
 
     ex.sets.forEach((set, si) => {
       html += renderSetRow(ei, si, set, ex);
     });
+
+    // Add set button
+    html += '<button class="add-set-btn" onclick="addSet(' + ei + ')">+ Add Set</button>';
 
     card.innerHTML = html;
     container.appendChild(card);
@@ -657,9 +838,7 @@ function renderExercises() {
 
 function renderSetRow(ei, si, set, ex) {
   const doneClass = set.done ? ' completed' : '';
-  const labelClass = (set.warmup ? ' warmup' : '');
-  const label = set.warmup ? 'W' + (si + 1) : (ex.type === 'time' ? '' : 'S' + (si + 1 - (ex.sets.filter((s, i) => i < si && s.warmup).length)));
-  // Recalculate working set number
+  // Calculate display label
   let workingIdx = 0;
   let warmupIdx = 0;
   for (let i = 0; i <= si; i++) {
@@ -667,46 +846,48 @@ function renderSetRow(ei, si, set, ex) {
     else workingIdx++;
   }
   const displayLabel = set.warmup ? ('W' + warmupIdx) : (ex.type === 'time' ? '1' : '' + workingIdx);
+  const labelClass = (set.warmup ? ' warmup' : '');
+  const canRemove = ex.sets.length > 1;
 
   if (ex.type === 'time') {
-    const mins = Math.floor((set.seconds || 0) / 60);
-    const secs = (set.seconds || 0) % 60;
-    return `<div class="set-row${doneClass}" data-ei="${ei}" data-si="${si}">
-      <span class="set-label">${displayLabel}</span>
-      <div class="time-input-group">
-        <input type="number" class="time-input" value="${mins}" min="0" max="99"
-          onchange="updateTime(${ei},${si},'min',this.value)" inputmode="numeric">
-        <span class="time-sep">:</span>
-        <input type="number" class="time-input" value="${String(secs).padStart(2,'0')}" min="0" max="59"
-          onchange="updateTime(${ei},${si},'sec',this.value)" inputmode="numeric">
-        <span style="font-size:0.7rem;color:var(--text-dim);margin-left:4px">min:sec</span>
-      </div>
-      <button class="done-btn${set.done ? ' checked' : ''}" onclick="toggleDone(${ei},${si})">
-        ${set.done ? '\u2713' : '\u25CB'}
-      </button>
-    </div>`;
+    const totalSec = set.seconds || 0;
+    return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
+      '<span class="set-label">' + displayLabel + '</span>' +
+      '<div class="seconds-input-group">' +
+        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',-10)">&minus;</button>' +
+        '<input type="number" class="seconds-stepper-input" value="' + totalSec + '" ' +
+          'onchange="setSeconds(' + ei + ',' + si + ',this.value)" inputmode="numeric">' +
+        '<button class="stepper-btn" onclick="stepSeconds(' + ei + ',' + si + ',10)">+</button>' +
+        '<span style="font-size:0.7rem;color:var(--text-dim);margin-left:4px">sec</span>' +
+      '</div>' +
+      '<button class="done-btn' + (set.done ? ' checked' : '') + '" onclick="toggleDone(' + ei + ',' + si + ')">' +
+        (set.done ? '\u2713' : '\u25CB') +
+      '</button>' +
+      (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+    '</div>';
   }
 
-  return `<div class="set-row${doneClass}" data-ei="${ei}" data-si="${si}">
-    <span class="set-label${labelClass}">${displayLabel}</span>
-    <div class="input-group">
-      <button class="stepper-btn" onclick="stepVal(${ei},${si},'weight',-2.5)">&minus;</button>
-      <input type="number" class="stepper-input" value="${set.weight}" step="2.5"
-        onchange="setVal(${ei},${si},'weight',this.value)" inputmode="decimal">
-      <button class="stepper-btn" onclick="stepVal(${ei},${si},'weight',2.5)">+</button>
-      <span class="unit-label">kg</span>
-    </div>
-    <div class="input-group">
-      <button class="stepper-btn" onclick="stepVal(${ei},${si},'reps',-1)">&minus;</button>
-      <input type="number" class="stepper-input" value="${set.reps}" step="1"
-        onchange="setVal(${ei},${si},'reps',this.value)" inputmode="numeric">
-      <button class="stepper-btn" onclick="stepVal(${ei},${si},'reps',1)">+</button>
-      <span class="unit-label">reps</span>
-    </div>
-    <button class="done-btn${set.done ? ' checked' : ''}" onclick="toggleDone(${ei},${si})">
-      ${set.done ? '\u2713' : '\u25CB'}
-    </button>
-  </div>`;
+  return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
+    '<span class="set-label' + labelClass + '">' + displayLabel + '</span>' +
+    '<div class="input-group">' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',-2.5)">&minus;</button>' +
+      '<input type="number" class="stepper-input" value="' + set.weight + '" step="2.5" ' +
+        'onchange="setVal(' + ei + ',' + si + ',\'weight\',this.value)" inputmode="decimal">' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'weight\',2.5)">+</button>' +
+      '<span class="unit-label">kg</span>' +
+    '</div>' +
+    '<div class="input-group">' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'reps\',-1)">&minus;</button>' +
+      '<input type="number" class="stepper-input" value="' + set.reps + '" step="1" ' +
+        'onchange="setVal(' + ei + ',' + si + ',\'reps\',this.value)" inputmode="numeric">' +
+      '<button class="stepper-btn" onclick="stepVal(' + ei + ',' + si + ',\'reps\',1)">+</button>' +
+      '<span class="unit-label">reps</span>' +
+    '</div>' +
+    '<button class="done-btn' + (set.done ? ' checked' : '') + '" onclick="toggleDone(' + ei + ',' + si + ')">' +
+      (set.done ? '\u2713' : '\u25CB') +
+    '</button>' +
+    (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+  '</div>';
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
@@ -723,14 +904,30 @@ function setVal(ei, si, field, val) {
 function stepVal(ei, si, field, delta) {
   const set = state.exercises[ei].sets[si];
   const newVal = Math.max(0, (set[field] || 0) + delta);
-  set[field] = Math.round(newVal * 10) / 10; // avoid float issues
+  set[field] = Math.round(newVal * 10) / 10;
   saveState();
-  // Update just the input
-  const rows = document.querySelectorAll(`.set-row[data-ei="${ei}"][data-si="${si}"]`);
+  const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
   if (rows.length) {
     const inputs = rows[0].querySelectorAll('.stepper-input');
     if (field === 'weight' && inputs[0]) inputs[0].value = set.weight;
     if (field === 'reps' && inputs[1]) inputs[1].value = set.reps;
+  }
+}
+
+function setSeconds(ei, si, val) {
+  const num = parseInt(val) || 0;
+  state.exercises[ei].sets[si].seconds = Math.max(0, num);
+  saveState();
+}
+
+function stepSeconds(ei, si, delta) {
+  const set = state.exercises[ei].sets[si];
+  set.seconds = Math.max(0, (set.seconds || 0) + delta);
+  saveState();
+  const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
+  if (rows.length) {
+    const input = rows[0].querySelector('.seconds-stepper-input');
+    if (input) input.value = set.seconds;
   }
 }
 
@@ -754,6 +951,118 @@ function toggleDone(ei, si) {
     const restSec = state.exercises[ei].restSec;
     if (restSec > 0) startRestTimer(restSec);
   }
+}
+
+// ============ ADD/REMOVE SETS ============
+function addSet(ei) {
+  const ex = state.exercises[ei];
+  const lastSet = ex.sets[ex.sets.length - 1];
+  let newSet;
+  if (ex.type === 'time') {
+    newSet = {
+      targetSeconds: lastSet.targetSeconds || lastSet.seconds || 60,
+      seconds: lastSet.seconds || lastSet.targetSeconds || 60,
+      done: false
+    };
+  } else {
+    newSet = {
+      targetWeight: lastSet.targetWeight || lastSet.weight || 0,
+      targetReps: lastSet.targetReps || lastSet.reps || 10,
+      weight: lastSet.weight || lastSet.targetWeight || 0,
+      reps: lastSet.reps || lastSet.targetReps || 10,
+      warmup: false,
+      done: false
+    };
+  }
+  ex.sets.push(newSet);
+  saveState();
+  renderExercises();
+}
+
+function removeSet(ei, si) {
+  const ex = state.exercises[ei];
+  if (ex.sets.length <= 1) return;
+  ex.sets.splice(si, 1);
+  saveState();
+  renderExercises();
+}
+
+// ============ EXERCISE PICKER ============
+function openExercisePicker() {
+  const overlay = document.getElementById('exercise-picker-overlay');
+  overlay.classList.add('show');
+  const search = document.getElementById('picker-search');
+  search.value = '';
+  renderPickerList('');
+  // Focus after a small delay so the overlay is visible
+  setTimeout(() => search.focus(), 100);
+}
+
+function closeExercisePicker() {
+  document.getElementById('exercise-picker-overlay').classList.remove('show');
+  document.getElementById('picker-search').value = '';
+}
+
+function renderPickerList(query) {
+  const list = document.getElementById('picker-list');
+  const q = query.trim().toLowerCase();
+  let html = '';
+
+  const filtered = q === '' ? EXERCISE_LIST : EXERCISE_LIST.filter(name => name.toLowerCase().includes(q));
+
+  filtered.forEach(name => {
+    html += '<button class="picker-item" onclick="selectExercise(\'' + esc(name).replace(/'/g, "\\'") + '\')">' + esc(name) + '</button>';
+  });
+
+  // Show custom option if query doesn't exactly match any exercise
+  if (q !== '' && !EXERCISE_LIST.some(name => name.toLowerCase() === q)) {
+    const displayName = query.trim();
+    html += '<button class="picker-item custom-item" onclick="selectExercise(\'' + esc(displayName).replace(/'/g, "\\'") + '\')">Add "' + esc(displayName) + '" as custom</button>';
+  }
+
+  if (filtered.length === 0 && q === '') {
+    html = '<div style="text-align:center;color:var(--text-dim);padding:20px">No exercises found</div>';
+  }
+
+  list.innerHTML = html;
+}
+
+// Attach search input event
+document.getElementById('picker-search').addEventListener('input', function() {
+  renderPickerList(this.value);
+});
+
+function selectExercise(name) {
+  const type = isTimeBased(name) ? 'time' : 'weight';
+  const restSec = type === 'time' ? 0 : 60;
+  let sets;
+  if (type === 'time') {
+    sets = [
+      { targetSeconds: 60, seconds: 60, done: false }
+    ];
+  } else {
+    sets = [
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false }
+    ];
+  }
+  state.exercises.push({
+    name: name,
+    type: type,
+    restSec: restSec,
+    sets: sets
+  });
+  saveState();
+  renderExercises();
+  closeExercisePicker();
+  // Scroll to new exercise
+  setTimeout(() => {
+    const container = document.getElementById('exercises-container');
+    if (container.lastElementChild) {
+      container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
 }
 
 // ============ REST TIMER ============
@@ -791,7 +1100,6 @@ function timerDone() {
   clearRestTimer();
   playBeep();
   vibrateDevice();
-  // Flash the bar briefly then hide
   const bar = document.getElementById('rest-timer-bar');
   bar.classList.add('urgent');
   document.getElementById('rest-timer-display').textContent = 'GO!';
@@ -817,7 +1125,6 @@ function clearRestTimer() {
 function playBeep() {
   try {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // Three short beeps
     [0, 0.2, 0.4].forEach(delay => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -851,36 +1158,6 @@ function startSessionTimer() {
   sessionInterval = setInterval(update, 1000);
 }
 
-// ============ ADD EXERCISE ============
-function showAddForm() {
-  document.getElementById('add-form').classList.add('show');
-  document.getElementById('new-exercise-name').focus();
-}
-function hideAddForm() {
-  document.getElementById('add-form').classList.remove('show');
-  document.getElementById('new-exercise-name').value = '';
-}
-function addCustomExercise() {
-  const name = document.getElementById('new-exercise-name').value.trim();
-  if (!name) return;
-  state.exercises.push({
-    name: name,
-    type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
-      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
-      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false }
-    ]
-  });
-  saveState();
-  renderExercises();
-  hideAddForm();
-  // Scroll to new exercise
-  const container = document.getElementById('exercises-container');
-  container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
 // ============ FINISH WORKOUT ============
 function resetWorkout() {
   if (!confirm('Reset workout? All progress will be cleared.')) return;
@@ -900,13 +1177,9 @@ function finishWorkout() {
   const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
   const durationMin = Math.round(elapsed / 60);
 
-  // Build export JSON
   const exportData = buildExportJSON(durationMin);
-
-  // Build human-readable summary
   const summary = buildSummary(durationMin);
 
-  // Save to history
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
   history.push({ ...exportData, _summary: summary, _timestamp: Date.now() });
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
@@ -977,19 +1250,17 @@ function showSummaryOverlay(exportData, summary, durationMin) {
   const totalSets = exportData.exercises.reduce((a, ex) => a + ex.sets.length, 0);
 
   const el = document.getElementById('summary-content');
-  el.innerHTML = `
-    <button class="close-btn" onclick="closeSummary()">&times;</button>
-    <h2>Workout Complete</h2>
-    <div style="margin:12px 0">
-      <span class="summary-stat"><span class="val">${durationMin}</span><br><span class="lbl">minutes</span></span>
-      <span class="summary-stat"><span class="val">${totalSets}</span><br><span class="lbl">sets</span></span>
-      <span class="summary-stat"><span class="val">${Math.round(totalVolume)}</span><br><span class="lbl">kg volume</span></span>
-    </div>
-    <div class="summary-block" id="summary-text">${esc(summary)}</div>
-    <button class="copy-btn" id="copy-summary-btn" onclick="copySummary()">Copy Summary Text</button>
-    <button class="copy-btn" id="copy-json-btn" onclick="copyJSON()" style="margin-top:6px;background:var(--surface3);color:var(--text)">Copy as JSON</button>
-  `;
-  // Store data for copying
+  el.innerHTML =
+    '<button class="close-btn" onclick="closeSummary()">&times;</button>' +
+    '<h2>Workout Complete</h2>' +
+    '<div style="margin:12px 0">' +
+      '<span class="summary-stat"><span class="val">' + durationMin + '</span><br><span class="lbl">minutes</span></span>' +
+      '<span class="summary-stat"><span class="val">' + totalSets + '</span><br><span class="lbl">sets</span></span>' +
+      '<span class="summary-stat"><span class="val">' + Math.round(totalVolume) + '</span><br><span class="lbl">kg volume</span></span>' +
+    '</div>' +
+    '<div class="summary-block" id="summary-text">' + esc(summary) + '</div>' +
+    '<button class="copy-btn" id="copy-summary-btn" onclick="copySummary()">Copy Summary Text</button>' +
+    '<button class="copy-btn" id="copy-json-btn" onclick="copyJSON()" style="margin-top:6px;background:var(--surface3);color:var(--text)">Copy as JSON</button>';
   el.dataset.json = JSON.stringify(exportData);
   el.dataset.summary = summary;
   document.getElementById('summary-overlay').classList.add('show');
@@ -1022,7 +1293,6 @@ async function copyToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text);
   } catch(e) {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -1043,14 +1313,13 @@ function showHistory() {
     html += '<div class="history-empty">No past workouts yet.</div>';
   } else {
     html += '<ul class="history-list">';
-    // Show newest first
     [...history].reverse().forEach((w, i) => {
       const idx = history.length - 1 - i;
       const sets = (w.exercises || []).reduce((a, ex) => a + ex.sets.length, 0);
-      html += `<li onclick="showHistoryItem(${idx})">
-        <span class="h-date">${esc(w.date)}</span>
-        <span class="h-name">${esc(w.name)} &mdash; ${sets} sets, ${w.duration_min || 0}min</span>
-      </li>`;
+      html += '<li onclick="showHistoryItem(' + idx + ')">' +
+        '<span class="h-date">' + esc(w.date) + '</span>' +
+        '<span class="h-name">' + esc(w.name) + ' &mdash; ' + sets + ' sets, ' + (w.duration_min || 0) + 'min</span>' +
+      '</li>';
     });
     html += '</ul>';
   }
@@ -1068,13 +1337,12 @@ function showHistoryItem(idx) {
   if (!w) return;
   const summary = w._summary || JSON.stringify(w, null, 2);
   const el = document.getElementById('history-content');
-  el.innerHTML = `
-    <button class="close-btn" onclick="showHistory()">&larr;</button>
-    <h2>${esc(w.name)}</h2>
-    <div style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px">${esc(w.date)} &mdash; ${w.duration_min || 0} min</div>
-    <div class="summary-block">${esc(summary)}</div>
-    <button class="copy-btn" onclick="copyHistoryJSON(${idx})">Copy as JSON</button>
-  `;
+  el.innerHTML =
+    '<button class="close-btn" onclick="showHistory()">&larr;</button>' +
+    '<h2>' + esc(w.name) + '</h2>' +
+    '<div style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px">' + esc(w.date) + ' &mdash; ' + (w.duration_min || 0) + ' min</div>' +
+    '<div class="summary-block">' + esc(summary) + '</div>' +
+    '<button class="copy-btn" onclick="copyHistoryJSON(' + idx + ')">Copy as JSON</button>';
 }
 
 async function copyHistoryJSON(idx) {
@@ -1093,10 +1361,8 @@ function preventPullToRefresh() {
   }, { passive: true });
   document.addEventListener('touchmove', e => {
     const y = e.touches[0].pageY;
-    // If at top and pulling down, prevent
     if (window.scrollY === 0 && y > startY + 10) {
       document.getElementById('pull-hint').style.opacity = '1';
-      // Can't preventDefault on passive listener, so we use CSS overscroll-behavior
     }
   }, { passive: true });
   document.addEventListener('touchend', () => {
