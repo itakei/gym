@@ -641,6 +641,60 @@ input {
 .gym-picker-box .gym-save-btn { background: var(--accent); color: #000; }
 .gym-picker-box .gym-cancel-btn { background: var(--surface3); color: var(--text); }
 
+/* Coach notes */
+.coach-section {
+  margin: 0 12px 8px;
+}
+.coach-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.coach-toggle:active { background: var(--surface2); }
+.coach-body {
+  display: none;
+  background: var(--surface);
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 0 14px 14px;
+  margin-top: -4px;
+}
+.coach-body.show { display: block; }
+.coach-body .coach-goal {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.coach-body .coach-rules {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+.coach-body .coach-rules li {
+  margin-bottom: 4px;
+  list-style: none;
+  padding-left: 0;
+}
+.coach-body .coach-rules li::before {
+  margin-right: 6px;
+}
+.coach-body .coach-do li::before { content: "OK"; color: var(--green); font-weight: 700; font-size: 0.7rem; }
+.coach-body .coach-dont li::before { content: "NO"; color: var(--red); font-weight: 700; font-size: 0.7rem; }
+.coach-body .coach-next {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--surface2);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -681,6 +735,18 @@ input {
     <button class="energy-btn" data-energy="fresh" onclick="setEnergy('fresh')">Fresh</button>
     <button class="energy-btn active-normal" data-energy="normal" onclick="setEnergy('normal')">Normal</button>
     <button class="energy-btn" data-energy="fatigued" onclick="setEnergy('fatigued')">Fatigued</button>
+  </div>
+
+  <div class="coach-section">
+    <button class="coach-toggle" onclick="toggleCoach()">
+      <span id="coach-arrow">&#9654;</span> Coach Notes
+    </button>
+    <div class="coach-body" id="coach-body">
+      <div class="coach-goal" id="coach-goal"></div>
+      <div class="coach-rules coach-do" id="coach-do"><ul></ul></div>
+      <div class="coach-rules coach-dont" id="coach-dont"><ul></ul></div>
+      <div class="coach-next" id="coach-next"></div>
+    </div>
   </div>
 
   <div class="gym-bar" id="gym-bar" onclick="openGymPicker()">
@@ -855,6 +921,43 @@ function saveNewGym() {
   closeGymPicker();
 }
 
+// ============ COACH NOTES ============
+const COACH_NOTES = {
+  goal: "Consolidate 70kg — 3rd clean session. You own this weight now.",
+  decision: "After set 1 at 70: fast+stable = continue | solid but heavy = 70x3x2 then 67.5x4 | slow = switch to 67.5x4x3",
+  do: [
+    "Bench first, then back, then shoulders",
+    "Clean reps only — leave 1 rep in reserve",
+    "Lat pulldown 49kg x 12 — consider 52kg next time"
+  ],
+  dont: [
+    "No shoulder press (lateral raises are fine)",
+    "No max testing — no 72.5 or 75 attempts",
+    "No extra bench sets beyond the plan",
+    "No heavy lower body today"
+  ],
+  next: "Next session (Thu/Fri): Lower Body — Hip thrust 57.5x10x3, BSS, Deadlift 40x10x2, Plank"
+};
+
+function toggleCoach() {
+  const body = document.getElementById('coach-body');
+  const arrow = document.getElementById('coach-arrow');
+  body.classList.toggle('show');
+  arrow.innerHTML = body.classList.contains('show') ? '&#9660;' : '&#9654;';
+}
+
+function renderCoach() {
+  document.getElementById('coach-goal').textContent = COACH_NOTES.goal;
+  if (COACH_NOTES.decision) {
+    document.getElementById('coach-goal').textContent += '\n' + COACH_NOTES.decision;
+  }
+  const doList = document.querySelector('#coach-do ul');
+  doList.innerHTML = COACH_NOTES.do.map(d => '<li>' + d + '</li>').join('');
+  const dontList = document.querySelector('#coach-dont ul');
+  dontList.innerHTML = COACH_NOTES.dont.map(d => '<li>' + d + '</li>').join('');
+  document.getElementById('coach-next').textContent = COACH_NOTES.next;
+}
+
 // ============ EXERCISE LIST ============
 const EXERCISE_LIST = [
   'Ab Wheel',
@@ -1009,6 +1112,7 @@ function init() {
     initFreshState();
   }
   renderAll();
+  renderCoach();
   renderGym();
   startSessionTimer();
   preventPullToRefresh();
