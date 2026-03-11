@@ -633,46 +633,69 @@ input {
 .gym-picker-box .gym-save-btn { background: var(--accent); color: #000; }
 .gym-picker-box .gym-cancel-btn { background: var(--surface3); color: var(--text); }
 
-/* Stopwatch for time-based exercises */
-.stopwatch-btn {
-  min-width: 72px;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+/* Plank timer */
+.plank-set {
+  padding: 16px;
+  border-top: 1px solid var(--surface2);
+  text-align: center;
 }
-.stopwatch-btn.ready {
-  background: var(--green);
-  color: #fff;
-}
-.stopwatch-btn.running {
-  background: var(--red);
-  color: #fff;
-  animation: pulse 1s infinite;
-}
-.stopwatch-btn.stopped {
-  background: var(--surface3);
+.plank-set.completed { background: var(--green-dim); }
+.plank-set-label {
+  font-size: 0.7rem;
   color: var(--text-dim);
+  margin-bottom: 4px;
 }
+.plank-time {
+  font-size: 3.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin: 8px 0;
+  color: var(--text);
+  cursor: pointer;
+}
+.plank-time.countdown { color: var(--text); }
+.plank-time.warning { color: var(--orange); }
+.plank-time.critical { color: var(--red); }
+.plank-time.bonus { color: var(--green); }
+.plank-time.result { color: var(--accent); }
+.plank-action-btn {
+  width: 100%;
+  max-width: 200px;
+  padding: 14px 0;
+  border-radius: var(--radius);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 8px auto 0;
+  display: block;
+}
+.plank-action-btn.start { background: var(--green); color: #fff; }
+.plank-action-btn.stop { background: var(--red); color: #fff; animation: pulse 1s infinite; }
+.plank-action-btn.done { background: var(--surface3); color: var(--text-dim); }
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
-.stopwatch-display {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text);
-  min-width: 60px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
+.plank-result-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 4px;
 }
-.stopwatch-display.running {
-  color: var(--green);
+.plank-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--red);
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
 }
 
 /* Coach notes */
@@ -1060,13 +1083,13 @@ const STOPWATCH_EXERCISES = [
 // Active stopwatch state (not persisted — resets on refresh)
 const activeStopwatches = {};
 
-function editStopwatchTarget(ei, si) {
+function editPlankTarget(ei, si) {
   const key = ei + '-' + si;
   if (activeStopwatches[key] && activeStopwatches[key].running) return;
   const set = state.exercises[ei].sets[si];
-  if (set.done) return; // already recorded
+  if (set.done) return;
   const current = set.targetSeconds || 60;
-  const input = prompt('Set target seconds:', current);
+  const input = prompt('Target seconds:', current);
   if (input === null) return;
   const val = parseInt(input);
   if (isNaN(val) || val <= 0) return;
@@ -1076,13 +1099,13 @@ function editStopwatchTarget(ei, si) {
   renderExercises();
 }
 
-function toggleStopwatch(ei, si) {
+function togglePlank(ei, si) {
   const key = ei + '-' + si;
   const set = state.exercises[ei].sets[si];
   if (set.done) return;
 
   if (activeStopwatches[key] && activeStopwatches[key].running) {
-    // STOP — record how long they actually held
+    // STOP
     clearInterval(activeStopwatches[key].interval);
     const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
     set.seconds = elapsed;
@@ -1093,48 +1116,56 @@ function toggleStopwatch(ei, si) {
     const restSec = state.exercises[ei].restSec;
     if (restSec > 0) startRestTimer(restSec);
   } else {
-    // START — countdown from target
+    // START — countdown
     const targetSec = set.targetSeconds || 60;
+    const startTime = Date.now();
+    let beeped = false;
     activeStopwatches[key] = {
-      startTime: Date.now(),
+      startTime: startTime,
       targetSec: targetSec,
       running: true,
       interval: setInterval(() => {
-        const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
-        const remaining = Math.max(0, targetSec - elapsed);
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        const remaining = targetSec - elapsed;
         const display = document.getElementById('sw-display-' + key);
-        if (display) {
+        if (!display) return;
+
+        if (remaining > 10) {
+          // Normal countdown
           const m = Math.floor(remaining / 60);
           const s = remaining % 60;
           display.textContent = m + ':' + String(s).padStart(2, '0');
-          // Change color when past target (counting negative = bonus time)
-          if (remaining <= 0) {
-            display.style.color = 'var(--green)';
-            const bonus = elapsed - targetSec;
-            const bm = Math.floor(bonus / 60);
-            const bs = bonus % 60;
-            display.textContent = '+' + bm + ':' + String(bs).padStart(2, '0');
-          } else if (remaining <= 10) {
-            display.style.color = 'var(--red)';
+          display.className = 'plank-time countdown';
+        } else if (remaining > 0) {
+          // Last 10 seconds — critical
+          display.textContent = '0:' + String(remaining).padStart(2, '0');
+          display.className = 'plank-time critical';
+        } else {
+          // Past target — bonus time
+          if (!beeped) {
+            beeped = true;
+            playBeep();
+            vibrateDevice();
           }
+          const bonus = Math.abs(remaining);
+          const bm = Math.floor(bonus / 60);
+          const bs = bonus % 60;
+          display.textContent = '+' + bm + ':' + String(bs).padStart(2, '0');
+          display.className = 'plank-time bonus';
         }
-        // Beep when countdown hits zero
-        if (remaining === 0 && elapsed === targetSec) {
-          playBeep();
-          vibrateDevice();
-        }
-      }, 100)
+      }, 200)
     };
-    // Update UI immediately
-    const btn = document.getElementById('sw-btn-' + key);
-    if (btn) { btn.textContent = 'STOP'; btn.className = 'stopwatch-btn running'; }
+
+    // Immediate UI update
     const display = document.getElementById('sw-display-' + key);
     if (display) {
       const m = Math.floor(targetSec / 60);
       const s = targetSec % 60;
       display.textContent = m + ':' + String(s).padStart(2, '0');
-      display.className = 'stopwatch-display running';
+      display.className = 'plank-time countdown';
     }
+    const btn = document.getElementById('sw-btn-' + key);
+    if (btn) { btn.textContent = 'STOP'; btn.className = 'plank-action-btn stop'; }
   }
 }
 
@@ -1385,28 +1416,37 @@ function renderSetRow(ei, si, set, ex) {
       const swKey = ei + '-' + si;
       const isRunning = activeStopwatches[swKey] && activeStopwatches[swKey].running;
       const targetSec = set.targetSeconds || 60;
-      // Display: countdown remaining when running/ready, or recorded result when done
-      let displaySec;
+      let displaySec, timeClass, btnClass, btnText, resultHtml = '';
+
       if (set.done) {
         displaySec = set.seconds || 0;
+        timeClass = 'result';
+        btnClass = 'done';
+        btnText = 'Done';
+        const diff = displaySec - targetSec;
+        resultHtml = '<div class="plank-result-label">Held ' + displaySec + 's' + (diff >= 0 ? ' (+' + diff + 's bonus)' : ' (' + diff + 's)') + '</div>';
       } else if (isRunning) {
-        displaySec = targetSec; // will be updated by interval
+        displaySec = targetSec;
+        timeClass = 'countdown';
+        btnClass = 'stop';
+        btnText = 'STOP';
       } else {
         displaySec = targetSec;
+        timeClass = 'countdown';
+        btnClass = 'start';
+        btnText = 'START';
       }
+
       const m = Math.floor(displaySec / 60);
       const s = displaySec % 60;
       const timeStr = m + ':' + String(s).padStart(2, '0');
 
-      const btnClass = set.done ? 'stopped' : (isRunning ? 'running' : 'ready');
-      const btnText = set.done ? (set.seconds || 0) + 's' : (isRunning ? 'STOP' : 'START');
-      const displayClass = isRunning ? ' running' : (set.done ? '' : '');
-
-      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
-        '<span class="set-label">' + displayLabel + '</span>' +
-        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTarget(' + ei + ',' + si + ')">' + timeStr + '</span>' +
-        '<button class="stopwatch-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="toggleStopwatch(' + ei + ',' + si + ')">' + btnText + '</button>' +
-        (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+      return '<div class="plank-set' + (set.done ? ' completed' : '') + '" data-ei="' + ei + '" data-si="' + si + '" style="position:relative">' +
+        '<div class="plank-set-label">Set ' + displayLabel + '</div>' +
+        '<div class="plank-time ' + timeClass + '" id="sw-display-' + swKey + '" onclick="editPlankTarget(' + ei + ',' + si + ')">' + timeStr + '</div>' +
+        '<button class="plank-action-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="togglePlank(' + ei + ',' + si + ')">' + btnText + '</button>' +
+        resultHtml +
+        (canRemove ? '<button class="plank-remove" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
       '</div>';
     }
     // Regular time input (Cycling etc)
