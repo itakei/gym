@@ -1332,7 +1332,7 @@ function renderExercises() {
     // Column headers
     const hasRemovable = ex.sets.length > 1;
     if (isStopwatch) {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">HOLD TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="font-size:0.55rem">TARGET</span><span class="sh-col" style="flex:1;text-align:center;font-size:0.55rem">TIMER</span><span class="sh-done" style="min-width:72px"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else if (ex.type === 'time') {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else {
@@ -1368,18 +1368,22 @@ function renderSetRow(ei, si, set, ex) {
     const totalSec = set.seconds || 0;
     const isStopwatch = STOPWATCH_EXERCISES.includes(ex.name);
     if (isStopwatch) {
-      // Stopwatch mode: Start/Stop button + live display
       const swKey = ei + '-' + si;
       const isRunning = activeStopwatches[swKey] && activeStopwatches[swKey].running;
       const btnClass = set.done ? 'stopped' : (isRunning ? 'running' : 'ready');
       const btnText = set.done ? 'Done' : (isRunning ? 'STOP' : 'START');
       const displayClass = isRunning ? ' running' : '';
-      const m = Math.floor(totalSec / 60);
-      const s = totalSec % 60;
+      const targetSec = set.targetSeconds || 60;
+      const actualSec = set.done ? (set.seconds || 0) : 0;
+      const elapsed = isRunning ? 0 : actualSec; // live update handled by interval
+      const m = Math.floor(elapsed / 60);
+      const s = elapsed % 60;
       const timeStr = m + ':' + String(s).padStart(2, '0');
-      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
+      const targetStr = targetSec + 's';
+      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '" style="flex-wrap:wrap;gap:6px">' +
         '<span class="set-label">' + displayLabel + '</span>' +
-        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTime(' + ei + ',' + si + ')">' + timeStr + '</span>' +
+        '<span style="font-size:0.75rem;color:var(--text-dim);min-width:36px">target ' + targetStr + '</span>' +
+        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '" onclick="editStopwatchTime(' + ei + ',' + si + ')" style="flex:1;text-align:center">' + timeStr + '</span>' +
         '<button class="stopwatch-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="toggleStopwatch(' + ei + ',' + si + ')">' + btnText + '</button>' +
         (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
       '</div>';
