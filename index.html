@@ -1302,14 +1302,20 @@ function renderExercises() {
     card.className = 'exercise-card';
 
     const completedSets = ex.sets.filter(s => s.done).length;
-    const badge = ex.type === 'time' ? 'Warm-up' :
-      (completedSets === ex.sets.length ? 'Done' : completedSets + '/' + ex.sets.length);
+    const isStopwatch = STOPWATCH_EXERCISES.includes(ex.name);
+    const isCycling = ex.type === 'time' && !isStopwatch;
+    let badge;
+    if (isCycling) badge = 'Warm-up';
+    else if (completedSets === ex.sets.length && ex.sets.length > 0) badge = 'Done';
+    else badge = completedSets + '/' + ex.sets.length;
 
     let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span></div>';
 
     // Column headers
     const hasRemovable = ex.sets.length > 1;
-    if (ex.type === 'time') {
+    if (isStopwatch) {
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">HOLD TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+    } else if (ex.type === 'time') {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">TIME</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
     } else {
       html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col">WEIGHT</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
