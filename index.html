@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Gym Logger</title>
+<style>
+:root {
+  --bg: #121212;
+  --surface: #1e1e1e;
+  --surface2: #2a2a2a;
+  --surface3: #333;
+  --text: #e0e0e0;
+  --text-dim: #888;
+  --accent: #4fc3f7;
+  --accent-dim: #2a6f8f;
+  --green: #66bb6a;
+  --green-dim: #2e5e30;
+  --red: #ef5350;
+  --orange: #ffa726;
+  --yellow: #fff176;
+  --radius: 12px;
+  --card-gap: 12px;
+  --btn-min: 52px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+input {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Sticky rest timer */
+#rest-timer-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--accent-dim);
+  color: #fff;
+  text-align: center;
+  padding: 14px 16px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: none;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 2px solid var(--accent);
+}
+#rest-timer-bar.urgent { background: var(--red); border-bottom-color: var(--red); }
+#rest-timer-bar .label { font-size: 0.8rem; font-weight: 400; opacity: 0.8; display: block; }
+
+/* Header */
+.header {
+  padding: 16px 16px 8px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+}
+.header.timer-active { top: 58px; }
+.header h1 { font-size: 1.3rem; font-weight: 700; }
+.header .meta { font-size: 0.85rem; color: var(--text-dim); margin-top: 2px; display: flex; gap: 12px; align-items: center; }
+.header .meta .session-time { color: var(--accent); font-weight: 600; }
+
+/* Energy selector */
+.energy-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+}
+.energy-btn {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.15s;
+}
+.energy-btn.active-fresh { background: #2e7d32; color: #fff; }
+.energy-btn.active-normal { background: #f57f17; color: #fff; }
+.energy-btn.active-fatigued { background: #c62828; color: #fff; }
+
+/* Notes */
+.notes-section { padding: 0 16px 8px; }
+.notes-toggle {
+  background: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  padding: 6px 0;
+}
+.notes-area {
+  display: none;
+  width: 100%;
+  min-height: 60px;
+  background: var(--surface);
+  border: 1px solid var(--surface3);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 10px;
+  font-size: 0.95rem;
+  resize: vertical;
+  margin-top: 4px;
+}
+.notes-area.show { display: block; }
+
+/* Exercise cards */
+.exercises { padding: 0 12px 120px; display: flex; flex-direction: column; gap: var(--card-gap); }
+.exercise-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.exercise-card .card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.exercise-card .card-header h2 { font-size: 1.05rem; font-weight: 700; }
+.exercise-card .card-header .badge {
+  font-size: 0.7rem;
+  background: var(--surface3);
+  padding: 3px 8px;
+  border-radius: 20px;
+  color: var(--text-dim);
+}
+
+/* Set rows */
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--surface2);
+  transition: background 0.2s;
+}
+.set-row.completed {
+  background: var(--green-dim);
+}
+.set-row .set-label {
+  width: 28px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+  flex-shrink: 0;
+}
+.set-row.completed .set-label { color: var(--green); }
+.set-row .set-label.warmup { color: var(--orange); font-size: 0.65rem; }
+
+/* Input group (stepper) */
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+.input-group .unit-label {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+.stepper-btn {
+  width: var(--btn-min);
+  height: var(--btn-min);
+  background: var(--surface3);
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+.stepper-btn:active { background: var(--accent-dim); }
+.stepper-input {
+  width: 52px;
+  text-align: center;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 1.2rem;
+  font-weight: 700;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.stepper-input::-webkit-inner-spin-button,
+.stepper-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Time input for cycling */
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+.time-input {
+  width: 64px;
+  text-align: center;
+  background: var(--surface2);
+  border: 1px solid var(--surface3);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: 10px 4px;
+  outline: none;
+}
+.time-input:focus { border-color: var(--accent); }
+.time-sep { font-size: 1.1rem; font-weight: 700; }
+
+/* Done button */
+.done-btn {
+  width: var(--btn-min);
+  height: var(--btn-min);
+  border-radius: 50%;
+  background: var(--surface3);
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  margin-left: 4px;
+}
+.done-btn.checked {
+  background: var(--green);
+  color: #fff;
+}
+.done-btn:active { transform: scale(0.92); }
+
+/* Add exercise */
+.add-exercise-section { padding: 12px; }
+.add-exercise-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  border: 2px dashed var(--surface3);
+}
+.add-exercise-btn:active { background: var(--surface2); }
+.add-form {
+  display: none;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 8px;
+}
+.add-form.show { display: block; }
+.add-form input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--surface3);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 8px;
+}
+.add-form input[type="text"]:focus { border-color: var(--accent); }
+.add-form-actions { display: flex; gap: 8px; }
+.add-form-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.btn-confirm { background: var(--accent); color: #000; }
+.btn-cancel { background: var(--surface3); color: var(--text); }
+
+/* Bottom bar */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+  background: linear-gradient(transparent, var(--bg) 20%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+.finish-btn {
+  flex: 1;
+  padding: 16px;
+  background: var(--green);
+  color: #000;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: var(--radius);
+}
+.finish-btn:active { opacity: 0.85; }
+.history-btn {
+  padding: 16px 20px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+}
+
+/* Modal / summary overlay */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 2000;
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+.overlay.show { display: block; }
+.overlay-content {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.overlay-content h2 { margin-bottom: 12px; font-size: 1.2rem; }
+.overlay-content .close-btn {
+  float: right;
+  background: var(--surface3);
+  color: var(--text);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+}
+.summary-block {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.summary-stat { display: inline-block; margin-right: 16px; }
+.summary-stat .val { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+.summary-stat .lbl { font-size: 0.75rem; color: var(--text-dim); }
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #000;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+.copy-btn:active { opacity: 0.85; }
+.copy-btn.copied { background: var(--green); }
+
+/* History */
+.history-list { list-style: none; }
+.history-list li {
+  padding: 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.history-list li:active { background: var(--surface3); }
+.history-list li .h-date { font-weight: 700; }
+.history-list li .h-name { color: var(--text-dim); font-size: 0.85rem; }
+.history-empty { color: var(--text-dim); font-size: 0.9rem; text-align: center; padding: 20px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* Overscroll hint */
+.pull-hint {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  padding: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+</style>
+</head>
+<body>
+
+<!-- Rest Timer Bar -->
+<div id="rest-timer-bar" onclick="dismissTimer()">
+  <span class="label">REST</span>
+  <span id="rest-timer-display">2:00</span>
+</div>
+
+<!-- Main Screen -->
+<div id="main-screen">
+  <div class="pull-hint" id="pull-hint">Pull to refresh disabled during workout</div>
+
+  <div class="header" id="header">
+    <h1 id="workout-name">Heavy Bench Day</h1>
+    <div class="meta">
+      <span id="workout-date">2026-03-11</span>
+      <span class="session-time" id="session-time">0:00</span>
+    </div>
+  </div>
+
+  <div class="energy-row">
+    <button class="energy-btn" data-energy="fresh" onclick="setEnergy('fresh')">Fresh</button>
+    <button class="energy-btn active-normal" data-energy="normal" onclick="setEnergy('normal')">Normal</button>
+    <button class="energy-btn" data-energy="fatigued" onclick="setEnergy('fatigued')">Fatigued</button>
+  </div>
+
+  <div class="notes-section">
+    <button class="notes-toggle" id="notes-toggle" onclick="toggleNotes()">+ Notes</button>
+    <textarea class="notes-area" id="notes-area" placeholder="Session notes..."></textarea>
+  </div>
+
+  <div class="exercises" id="exercises-container"></div>
+
+  <div class="add-exercise-section">
+    <button class="add-exercise-btn" id="add-exercise-btn" onclick="showAddForm()">+ Add Exercise</button>
+    <div class="add-form" id="add-form">
+      <input type="text" id="new-exercise-name" placeholder="Exercise name">
+      <div class="add-form-actions">
+        <button class="btn-cancel" onclick="hideAddForm()">Cancel</button>
+        <button class="btn-confirm" onclick="addCustomExercise()">Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <button class="history-btn" onclick="showHistory()">History</button>
+  <button class="reset-btn" onclick="resetWorkout()" style="background:var(--surface3);color:var(--orange);font-size:0.9rem;padding:10px 16px;border-radius:var(--radius);">Reset</button>
+  <button class="finish-btn" onclick="finishWorkout()">Finish Workout</button>
+</div>
+
+<!-- Summary Overlay -->
+<div class="overlay" id="summary-overlay">
+  <div class="overlay-content" id="summary-content"></div>
+</div>
+
+<!-- History Overlay -->
+<div class="overlay" id="history-overlay">
+  <div class="overlay-content" id="history-content"></div>
+</div>
+
+<script>
+// ============ DATA ============
+const WORKOUT_DATE = '2026-03-11';
+const WORKOUT_NAME = 'Heavy Bench Day';
+
+const DEFAULT_EXERCISES = [
+  {
+    name: 'Cycling (Indoor)',
+    type: 'time',
+    restSec: 0,
+    sets: [{ targetSeconds: 300 }]
+  },
+  {
+    name: 'Bench Press (Barbell)',
+    type: 'weight',
+    restSec: 120,
+    sets: [
+      { targetWeight: 20, targetReps: 10, warmup: true },
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 55, targetReps: 3, warmup: true },
+      { targetWeight: 60, targetReps: 1, warmup: true },
+      { targetWeight: 70, targetReps: 3, warmup: false },
+      { targetWeight: 70, targetReps: 3, warmup: false },
+      { targetWeight: 70, targetReps: 3, warmup: false }
+    ]
+  },
+  {
+    name: 'Lat Pulldown (Cable)',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Lateral Raise (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Rear Delt Raise (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 2.5, targetReps: 12, warmup: false },
+      { targetWeight: 2.5, targetReps: 12, warmup: false },
+      { targetWeight: 2.5, targetReps: 12, warmup: false }
+    ]
+  }
+];
+
+// ============ STATE ============
+let state = {
+  date: WORKOUT_DATE,
+  name: WORKOUT_NAME,
+  energy: 'normal',
+  notes: '',
+  startTime: null,
+  exercises: [],
+  finished: false
+};
+
+const STORAGE_KEY = 'workoutCurrent';
+const HISTORY_KEY = 'workoutHistory';
+
+// ============ INIT ============
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed.date === WORKOUT_DATE && !parsed.finished) {
+        state = parsed;
+      } else {
+        initFreshState();
+      }
+    } catch(e) { initFreshState(); }
+  } else {
+    initFreshState();
+  }
+  renderAll();
+  startSessionTimer();
+  preventPullToRefresh();
+}
+
+function initFreshState() {
+  state = {
+    date: WORKOUT_DATE,
+    name: WORKOUT_NAME,
+    energy: 'normal',
+    notes: '',
+    startTime: Date.now(),
+    exercises: DEFAULT_EXERCISES.map(ex => ({
+      name: ex.name,
+      type: ex.type,
+      restSec: ex.restSec,
+      sets: ex.sets.map(s => {
+        if (ex.type === 'time') {
+          return { targetSeconds: s.targetSeconds, seconds: s.targetSeconds, done: false };
+        }
+        return {
+          targetWeight: s.targetWeight, targetReps: s.targetReps,
+          weight: s.targetWeight, reps: s.targetReps,
+          warmup: s.warmup || false, done: false
+        };
+      })
+    })),
+    finished: false
+  };
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ============ RENDER ============
+function renderAll() {
+  renderEnergy();
+  renderNotes();
+  renderExercises();
+}
+
+function renderEnergy() {
+  document.querySelectorAll('.energy-btn').forEach(btn => {
+    const e = btn.dataset.energy;
+    btn.className = 'energy-btn' + (state.energy === e ? (' active-' + e) : '');
+  });
+}
+
+function setEnergy(val) {
+  state.energy = val;
+  renderEnergy();
+  saveState();
+}
+
+function toggleNotes() {
+  const area = document.getElementById('notes-area');
+  area.classList.toggle('show');
+  const toggle = document.getElementById('notes-toggle');
+  toggle.textContent = area.classList.contains('show') ? '- Notes' : '+ Notes';
+  if (area.classList.contains('show')) area.focus();
+}
+
+function renderNotes() {
+  const area = document.getElementById('notes-area');
+  area.value = state.notes || '';
+  area.addEventListener('input', () => { state.notes = area.value; saveState(); });
+}
+
+function renderExercises() {
+  const container = document.getElementById('exercises-container');
+  container.innerHTML = '';
+  state.exercises.forEach((ex, ei) => {
+    const card = document.createElement('div');
+    card.className = 'exercise-card';
+
+    const completedSets = ex.sets.filter(s => s.done).length;
+    const badge = ex.type === 'time' ? 'Warm-up' :
+      (completedSets === ex.sets.length ? 'Done' : completedSets + '/' + ex.sets.length);
+
+    let html = `<div class="card-header"><h2>${esc(ex.name)}</h2><span class="badge">${badge}</span></div>`;
+
+    ex.sets.forEach((set, si) => {
+      html += renderSetRow(ei, si, set, ex);
+    });
+
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+function renderSetRow(ei, si, set, ex) {
+  const doneClass = set.done ? ' completed' : '';
+  const labelClass = (set.warmup ? ' warmup' : '');
+  const label = set.warmup ? 'W' + (si + 1) : (ex.type === 'time' ? '' : 'S' + (si + 1 - (ex.sets.filter((s, i) => i < si && s.warmup).length)));
+  // Recalculate working set number
+  let workingIdx = 0;
+  let warmupIdx = 0;
+  for (let i = 0; i <= si; i++) {
+    if (ex.sets[i].warmup) warmupIdx++;
+    else workingIdx++;
+  }
+  const displayLabel = set.warmup ? ('W' + warmupIdx) : (ex.type === 'time' ? '1' : '' + workingIdx);
+
+  if (ex.type === 'time') {
+    const mins = Math.floor((set.seconds || 0) / 60);
+    const secs = (set.seconds || 0) % 60;
+    return `<div class="set-row${doneClass}" data-ei="${ei}" data-si="${si}">
+      <span class="set-label">${displayLabel}</span>
+      <div class="time-input-group">
+        <input type="number" class="time-input" value="${mins}" min="0" max="99"
+          onchange="updateTime(${ei},${si},'min',this.value)" inputmode="numeric">
+        <span class="time-sep">:</span>
+        <input type="number" class="time-input" value="${String(secs).padStart(2,'0')}" min="0" max="59"
+          onchange="updateTime(${ei},${si},'sec',this.value)" inputmode="numeric">
+        <span style="font-size:0.7rem;color:var(--text-dim);margin-left:4px">min:sec</span>
+      </div>
+      <button class="done-btn${set.done ? ' checked' : ''}" onclick="toggleDone(${ei},${si})">
+        ${set.done ? '\u2713' : '\u25CB'}
+      </button>
+    </div>`;
+  }
+
+  return `<div class="set-row${doneClass}" data-ei="${ei}" data-si="${si}">
+    <span class="set-label${labelClass}">${displayLabel}</span>
+    <div class="input-group">
+      <button class="stepper-btn" onclick="stepVal(${ei},${si},'weight',-2.5)">&minus;</button>
+      <input type="number" class="stepper-input" value="${set.weight}" step="2.5"
+        onchange="setVal(${ei},${si},'weight',this.value)" inputmode="decimal">
+      <button class="stepper-btn" onclick="stepVal(${ei},${si},'weight',2.5)">+</button>
+      <span class="unit-label">kg</span>
+    </div>
+    <div class="input-group">
+      <button class="stepper-btn" onclick="stepVal(${ei},${si},'reps',-1)">&minus;</button>
+      <input type="number" class="stepper-input" value="${set.reps}" step="1"
+        onchange="setVal(${ei},${si},'reps',this.value)" inputmode="numeric">
+      <button class="stepper-btn" onclick="stepVal(${ei},${si},'reps',1)">+</button>
+      <span class="unit-label">reps</span>
+    </div>
+    <button class="done-btn${set.done ? ' checked' : ''}" onclick="toggleDone(${ei},${si})">
+      ${set.done ? '\u2713' : '\u25CB'}
+    </button>
+  </div>`;
+}
+
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ============ SET ACTIONS ============
+function setVal(ei, si, field, val) {
+  const num = parseFloat(val);
+  if (!isNaN(num) && num >= 0) {
+    state.exercises[ei].sets[si][field] = num;
+    saveState();
+  }
+}
+
+function stepVal(ei, si, field, delta) {
+  const set = state.exercises[ei].sets[si];
+  const newVal = Math.max(0, (set[field] || 0) + delta);
+  set[field] = Math.round(newVal * 10) / 10; // avoid float issues
+  saveState();
+  // Update just the input
+  const rows = document.querySelectorAll(`.set-row[data-ei="${ei}"][data-si="${si}"]`);
+  if (rows.length) {
+    const inputs = rows[0].querySelectorAll('.stepper-input');
+    if (field === 'weight' && inputs[0]) inputs[0].value = set.weight;
+    if (field === 'reps' && inputs[1]) inputs[1].value = set.reps;
+  }
+}
+
+function updateTime(ei, si, part, val) {
+  const set = state.exercises[ei].sets[si];
+  const total = set.seconds || 0;
+  const mins = Math.floor(total / 60);
+  const secs = total % 60;
+  const v = parseInt(val) || 0;
+  if (part === 'min') set.seconds = v * 60 + secs;
+  else set.seconds = mins * 60 + Math.min(59, v);
+  saveState();
+}
+
+function toggleDone(ei, si) {
+  const set = state.exercises[ei].sets[si];
+  set.done = !set.done;
+  saveState();
+  renderExercises();
+  if (set.done) {
+    const restSec = state.exercises[ei].restSec;
+    if (restSec > 0) startRestTimer(restSec);
+  }
+}
+
+// ============ REST TIMER ============
+let restInterval = null;
+let restRemaining = 0;
+let audioCtx = null;
+
+function startRestTimer(seconds) {
+  clearRestTimer();
+  restRemaining = seconds;
+  const bar = document.getElementById('rest-timer-bar');
+  const header = document.getElementById('header');
+  bar.style.display = 'block';
+  bar.classList.remove('urgent');
+  header.classList.add('timer-active');
+  updateTimerDisplay();
+  restInterval = setInterval(() => {
+    restRemaining--;
+    if (restRemaining <= 10 && restRemaining > 0) bar.classList.add('urgent');
+    if (restRemaining <= 0) {
+      timerDone();
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(restRemaining / 60);
+  const s = restRemaining % 60;
+  document.getElementById('rest-timer-display').textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+function timerDone() {
+  clearRestTimer();
+  playBeep();
+  vibrateDevice();
+  // Flash the bar briefly then hide
+  const bar = document.getElementById('rest-timer-bar');
+  bar.classList.add('urgent');
+  document.getElementById('rest-timer-display').textContent = 'GO!';
+  setTimeout(() => {
+    bar.style.display = 'none';
+    bar.classList.remove('urgent');
+    document.getElementById('header').classList.remove('timer-active');
+  }, 2000);
+}
+
+function dismissTimer() {
+  clearRestTimer();
+  const bar = document.getElementById('rest-timer-bar');
+  bar.style.display = 'none';
+  bar.classList.remove('urgent');
+  document.getElementById('header').classList.remove('timer-active');
+}
+
+function clearRestTimer() {
+  if (restInterval) { clearInterval(restInterval); restInterval = null; }
+}
+
+function playBeep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Three short beeps
+    [0, 0.2, 0.4].forEach(delay => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 880;
+      osc.type = 'square';
+      gain.gain.value = 0.3;
+      osc.start(audioCtx.currentTime + delay);
+      osc.stop(audioCtx.currentTime + delay + 0.12);
+    });
+  } catch(e) {}
+}
+
+function vibrateDevice() {
+  try { if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); } catch(e) {}
+}
+
+// ============ SESSION TIMER ============
+let sessionInterval = null;
+function startSessionTimer() {
+  const el = document.getElementById('session-time');
+  function update() {
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const h = Math.floor(elapsed / 3600);
+    const m = Math.floor((elapsed % 3600) / 60);
+    const s = elapsed % 60;
+    el.textContent = (h > 0 ? h + ':' : '') + (h > 0 ? String(m).padStart(2,'0') : m) + ':' + String(s).padStart(2, '0');
+  }
+  update();
+  sessionInterval = setInterval(update, 1000);
+}
+
+// ============ ADD EXERCISE ============
+function showAddForm() {
+  document.getElementById('add-form').classList.add('show');
+  document.getElementById('new-exercise-name').focus();
+}
+function hideAddForm() {
+  document.getElementById('add-form').classList.remove('show');
+  document.getElementById('new-exercise-name').value = '';
+}
+function addCustomExercise() {
+  const name = document.getElementById('new-exercise-name').value.trim();
+  if (!name) return;
+  state.exercises.push({
+    name: name,
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false },
+      { targetWeight: 0, targetReps: 10, weight: 0, reps: 10, warmup: false, done: false }
+    ]
+  });
+  saveState();
+  renderExercises();
+  hideAddForm();
+  // Scroll to new exercise
+  const container = document.getElementById('exercises-container');
+  container.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ============ FINISH WORKOUT ============
+function resetWorkout() {
+  if (!confirm('Reset workout? All progress will be cleared.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  initFreshState();
+  saveState();
+  renderAll();
+}
+
+function finishWorkout() {
+  const completedSets = state.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
+  if (completedSets === 0) {
+    if (!confirm('No sets completed. Finish anyway?')) return;
+  }
+  if (!confirm('Finish this workout?')) return;
+
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const durationMin = Math.round(elapsed / 60);
+
+  // Build export JSON
+  const exportData = buildExportJSON(durationMin);
+
+  // Build human-readable summary
+  const summary = buildSummary(durationMin);
+
+  // Save to history
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  history.push({ ...exportData, _summary: summary, _timestamp: Date.now() });
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+
+  state.finished = true;
+  saveState();
+
+  showSummaryOverlay(exportData, summary, durationMin);
+}
+
+function buildExportJSON(durationMin) {
+  const exercises = [];
+  state.exercises.forEach(ex => {
+    const doneSets = ex.sets.filter(s => s.done);
+    if (doneSets.length === 0) return;
+    const exData = { name: ex.name, sets: [] };
+    doneSets.forEach(s => {
+      if (ex.type === 'time') {
+        exData.sets.push({ seconds: s.seconds || 0 });
+      } else {
+        exData.sets.push({ weight: s.weight, reps: s.reps });
+      }
+    });
+    exercises.push(exData);
+  });
+  return {
+    date: state.date,
+    name: state.name,
+    duration_min: durationMin,
+    exercises: exercises,
+    energy: state.energy,
+    notes: state.notes || ''
+  };
+}
+
+function buildSummary(durationMin) {
+  let lines = [];
+  lines.push(state.name + ' - ' + state.date);
+  lines.push('Duration: ' + durationMin + ' min | Energy: ' + state.energy);
+  lines.push('');
+  let totalVolume = 0;
+  let totalSets = 0;
+  state.exercises.forEach(ex => {
+    const doneSets = ex.sets.filter(s => s.done);
+    if (doneSets.length === 0) return;
+    lines.push(ex.name + ':');
+    doneSets.forEach(s => {
+      if (ex.type === 'time') {
+        const m = Math.floor(s.seconds / 60);
+        const sec = s.seconds % 60;
+        lines.push('  ' + m + ':' + String(sec).padStart(2, '0'));
+      } else {
+        lines.push('  ' + s.weight + 'kg x ' + s.reps);
+        totalVolume += s.weight * s.reps;
+      }
+      totalSets++;
+    });
+  });
+  lines.push('');
+  lines.push('Total sets: ' + totalSets + ' | Volume: ' + Math.round(totalVolume) + ' kg');
+  if (state.notes) lines.push('Notes: ' + state.notes);
+  return lines.join('\n');
+}
+
+function showSummaryOverlay(exportData, summary, durationMin) {
+  const totalVolume = exportData.exercises.reduce((a, ex) =>
+    a + ex.sets.reduce((b, s) => b + ((s.weight || 0) * (s.reps || 0)), 0), 0);
+  const totalSets = exportData.exercises.reduce((a, ex) => a + ex.sets.length, 0);
+
+  const el = document.getElementById('summary-content');
+  el.innerHTML = `
+    <button class="close-btn" onclick="closeSummary()">&times;</button>
+    <h2>Workout Complete</h2>
+    <div style="margin:12px 0">
+      <span class="summary-stat"><span class="val">${durationMin}</span><br><span class="lbl">minutes</span></span>
+      <span class="summary-stat"><span class="val">${totalSets}</span><br><span class="lbl">sets</span></span>
+      <span class="summary-stat"><span class="val">${Math.round(totalVolume)}</span><br><span class="lbl">kg volume</span></span>
+    </div>
+    <div class="summary-block" id="summary-text">${esc(summary)}</div>
+    <button class="copy-btn" id="copy-summary-btn" onclick="copySummary()">Copy Summary Text</button>
+    <button class="copy-btn" id="copy-json-btn" onclick="copyJSON()" style="margin-top:6px;background:var(--surface3);color:var(--text)">Copy as JSON</button>
+  `;
+  // Store data for copying
+  el.dataset.json = JSON.stringify(exportData);
+  el.dataset.summary = summary;
+  document.getElementById('summary-overlay').classList.add('show');
+}
+
+function closeSummary() {
+  document.getElementById('summary-overlay').classList.remove('show');
+}
+
+async function copySummary() {
+  const text = document.getElementById('summary-content').dataset.summary;
+  await copyToClipboard(text);
+  const btn = document.getElementById('copy-summary-btn');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy Summary Text'; btn.classList.remove('copied'); }, 2000);
+}
+
+async function copyJSON() {
+  const text = document.getElementById('summary-content').dataset.json;
+  await copyToClipboard(text);
+  const btn = document.getElementById('copy-json-btn');
+  btn.textContent = 'Copied!';
+  btn.style.background = 'var(--green)';
+  btn.style.color = '#000';
+  setTimeout(() => { btn.textContent = 'Copy as JSON'; btn.style.background = ''; btn.style.color = ''; }, 2000);
+}
+
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch(e) {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+}
+
+// ============ HISTORY ============
+function showHistory() {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const el = document.getElementById('history-content');
+  let html = '<button class="close-btn" onclick="closeHistory()">&times;</button><h2>Workout History</h2>';
+  if (history.length === 0) {
+    html += '<div class="history-empty">No past workouts yet.</div>';
+  } else {
+    html += '<ul class="history-list">';
+    // Show newest first
+    [...history].reverse().forEach((w, i) => {
+      const idx = history.length - 1 - i;
+      const sets = (w.exercises || []).reduce((a, ex) => a + ex.sets.length, 0);
+      html += `<li onclick="showHistoryItem(${idx})">
+        <span class="h-date">${esc(w.date)}</span>
+        <span class="h-name">${esc(w.name)} &mdash; ${sets} sets, ${w.duration_min || 0}min</span>
+      </li>`;
+    });
+    html += '</ul>';
+  }
+  el.innerHTML = html;
+  document.getElementById('history-overlay').classList.add('show');
+}
+
+function closeHistory() {
+  document.getElementById('history-overlay').classList.remove('show');
+}
+
+function showHistoryItem(idx) {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const w = history[idx];
+  if (!w) return;
+  const summary = w._summary || JSON.stringify(w, null, 2);
+  const el = document.getElementById('history-content');
+  el.innerHTML = `
+    <button class="close-btn" onclick="showHistory()">&larr;</button>
+    <h2>${esc(w.name)}</h2>
+    <div style="color:var(--text-dim);font-size:0.85rem;margin-bottom:8px">${esc(w.date)} &mdash; ${w.duration_min || 0} min</div>
+    <div class="summary-block">${esc(summary)}</div>
+    <button class="copy-btn" onclick="copyHistoryJSON(${idx})">Copy as JSON</button>
+  `;
+}
+
+async function copyHistoryJSON(idx) {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const w = { ...history[idx] };
+  delete w._summary;
+  delete w._timestamp;
+  await copyToClipboard(JSON.stringify(w));
+}
+
+// ============ PREVENT PULL-TO-REFRESH ============
+function preventPullToRefresh() {
+  let startY = 0;
+  document.addEventListener('touchstart', e => {
+    startY = e.touches[0].pageY;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    const y = e.touches[0].pageY;
+    // If at top and pulling down, prevent
+    if (window.scrollY === 0 && y > startY + 10) {
+      document.getElementById('pull-hint').style.opacity = '1';
+      // Can't preventDefault on passive listener, so we use CSS overscroll-behavior
+    }
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    document.getElementById('pull-hint').style.opacity = '0';
+  }, { passive: true });
+}
+
+// ============ BOOT ============
+init();
+</script>
+</body>
+</html>
