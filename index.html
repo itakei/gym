@@ -641,6 +641,48 @@ input {
 .gym-picker-box .gym-save-btn { background: var(--accent); color: #000; }
 .gym-picker-box .gym-cancel-btn { background: var(--surface3); color: var(--text); }
 
+/* Stopwatch for time-based exercises */
+.stopwatch-btn {
+  min-width: 72px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.stopwatch-btn.ready {
+  background: var(--green);
+  color: #fff;
+}
+.stopwatch-btn.running {
+  background: var(--red);
+  color: #fff;
+  animation: pulse 1s infinite;
+}
+.stopwatch-btn.stopped {
+  background: var(--surface3);
+  color: var(--text-dim);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.stopwatch-display {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 60px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.stopwatch-display.running {
+  color: var(--green);
+}
+
 /* Coach notes */
 .coach-section {
   margin: 0 12px 8px;
@@ -928,7 +970,8 @@ const COACH_NOTES = {
   do: [
     "Bench first, then back, then shoulders",
     "Clean reps only — leave 1 rep in reserve",
-    "Lat pulldown 49kg x 12 — consider 52kg next time"
+    "Lat pulldown 49kg x 12 — consider 52kg next time",
+    "Plank: hold as long as you can, aim for 45-60s"
   ],
   dont: [
     "No shoulder press (lateral raises are fine)",
@@ -1021,6 +1064,60 @@ const TIME_BASED_EXERCISES = [
   'Plank', 'Side Plank', 'Reverse Plank', 'Deadhang'
 ];
 
+// Exercises that use stopwatch (count UP) instead of manual time entry
+const STOPWATCH_EXERCISES = [
+  'Plank', 'Side Plank', 'Reverse Plank', 'Deadhang'
+];
+
+// Active stopwatch state (not persisted — resets on refresh)
+const activeStopwatches = {};
+
+function toggleStopwatch(ei, si) {
+  const key = ei + '-' + si;
+  const set = state.exercises[ei].sets[si];
+  if (set.done) return; // already finished
+
+  if (activeStopwatches[key] && activeStopwatches[key].running) {
+    // STOP — record time
+    clearInterval(activeStopwatches[key].interval);
+    const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
+    set.seconds = elapsed;
+    set.done = true;
+    activeStopwatches[key].running = false;
+    saveState();
+    renderExercises();
+    // Start rest timer
+    const restSec = state.exercises[ei].restSec;
+    if (restSec > 0) startRestTimer(restSec);
+  } else {
+    // START — begin counting
+    activeStopwatches[key] = {
+      startTime: Date.now(),
+      running: true,
+      interval: setInterval(() => {
+        const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
+        const display = document.getElementById('sw-display-' + key);
+        if (display) {
+          const m = Math.floor(elapsed / 60);
+          const s = elapsed % 60;
+          display.textContent = m + ':' + String(s).padStart(2, '0');
+        }
+        // Also update button to show it's running
+        const btn = document.getElementById('sw-btn-' + key);
+        if (btn) {
+          btn.textContent = 'STOP';
+          btn.className = 'stopwatch-btn running';
+        }
+      }, 100)
+    };
+    // Update UI immediately
+    const btn = document.getElementById('sw-btn-' + key);
+    if (btn) { btn.textContent = 'STOP'; btn.className = 'stopwatch-btn running'; }
+    const display = document.getElementById('sw-display-' + key);
+    if (display) { display.textContent = '0:00'; display.className = 'stopwatch-display running'; }
+  }
+}
+
 function isTimeBased(name) {
   return TIME_BASED_EXERCISES.includes(name);
 }
@@ -1079,6 +1176,12 @@ const DEFAULT_EXERCISES = [
       { targetWeight: 2.5, targetReps: 12, warmup: false },
       { targetWeight: 2.5, targetReps: 12, warmup: false }
     ]
+  },
+  {
+    name: 'Plank',
+    type: 'time',
+    restSec: 60,
+    sets: [{ targetSeconds: 60 }, { targetSeconds: 60 }]
   }
 ];
 
@@ -1239,6 +1342,25 @@ function renderSetRow(ei, si, set, ex) {
 
   if (ex.type === 'time') {
     const totalSec = set.seconds || 0;
+    const isStopwatch = STOPWATCH_EXERCISES.includes(ex.name);
+    if (isStopwatch) {
+      // Stopwatch mode: Start/Stop button + live display
+      const swKey = ei + '-' + si;
+      const isRunning = activeStopwatches[swKey] && activeStopwatches[swKey].running;
+      const btnClass = set.done ? 'stopped' : (isRunning ? 'running' : 'ready');
+      const btnText = set.done ? 'Done' : (isRunning ? 'STOP' : 'START');
+      const displayClass = isRunning ? ' running' : '';
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      const timeStr = m + ':' + String(s).padStart(2, '0');
+      return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
+        '<span class="set-label">' + displayLabel + '</span>' +
+        '<span class="stopwatch-display' + displayClass + '" id="sw-display-' + swKey + '">' + timeStr + '</span>' +
+        '<button class="stopwatch-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="toggleStopwatch(' + ei + ',' + si + ')">' + btnText + '</button>' +
+        (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+      '</div>';
+    }
+    // Regular time input (Cycling etc)
     return '<div class="set-row' + doneClass + '" data-ei="' + ei + '" data-si="' + si + '">' +
       '<span class="set-label">' + displayLabel + '</span>' +
       '<div class="seconds-input-group">' +
