@@ -976,21 +976,21 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Consolidate 70kg — 3rd clean session. You own this weight now.",
-  decision: "After set 1 at 70: fast+stable = continue | solid but heavy = 70x3x2 then 67.5x4 | slow = switch to 67.5x4x3",
+  goal: "Lower body focus — hip thrust is your #1 priority lift today.",
+  decision: "Hip thrust set 1: smooth x10 = stay at 57.5 | grinding = drop to 55 | easy = try 60 for set 3",
   do: [
-    "Bench first, then back, then shoulders",
-    "Clean reps only — leave 1 rep in reserve",
-    "Lat pulldown 49kg x 12 — consider 52kg next time",
-    "Plank: hold as long as you can, aim for 45-60s"
+    "Hip thrust first after warmup — 3 clean sets of 10",
+    "BSS bodyweight x 10 each leg — control the descent",
+    "Deadlift 40kg x 10 — keep light, focus on form",
+    "Plank: aim for 60s holds, test the new timer!"
   ],
   dont: [
-    "No shoulder press (lateral raises are fine)",
-    "No max testing — no 72.5 or 75 attempts",
-    "No extra bench sets beyond the plan",
-    "No heavy lower body today"
+    "No upper body pressing today",
+    "No arm work — save curls/triceps for upper days",
+    "No heavy deadlifts — 40kg is the ceiling",
+    "No skipping hip thrusts for other exercises"
   ],
-  next: "Next session (Thu/Fri): Lower Body — Hip thrust 57.5x10x3, BSS, Deadlift 40x10x2, Plank"
+  next: "Next session (Sat): Bench Volume Day — 62.5x5x4, Lat PD, Lateral raise, Rear delt"
 };
 
 function toggleCoach() {
@@ -1174,8 +1174,8 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-03-11';
-const WORKOUT_NAME = 'Heavy Bench Day';
+const WORKOUT_DATE = '2026-03-12';
+const WORKOUT_NAME = 'Lower Body Day';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1185,47 +1185,31 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 300 }]
   },
   {
-    name: 'Bench Press (Barbell)',
+    name: 'Hip Thrust (Barbell)',
     type: 'weight',
     restSec: 120,
     sets: [
-      { targetWeight: 20, targetReps: 10, warmup: true },
-      { targetWeight: 40, targetReps: 5, warmup: true },
-      { targetWeight: 55, targetReps: 3, warmup: true },
-      { targetWeight: 60, targetReps: 1, warmup: true },
-      { targetWeight: 70, targetReps: 3, warmup: false },
-      { targetWeight: 70, targetReps: 3, warmup: false },
-      { targetWeight: 70, targetReps: 3, warmup: false }
+      { targetWeight: 57.5, targetReps: 10, warmup: false },
+      { targetWeight: 57.5, targetReps: 10, warmup: false },
+      { targetWeight: 57.5, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Lat Pulldown (Cable)',
+    name: 'Bulgarian Split Squat',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false }
+      { targetWeight: 0, targetReps: 10, warmup: false },
+      { targetWeight: 0, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Lateral Raise (Dumbbell)',
+    name: 'Deadlift (Barbell)',
     type: 'weight',
-    restSec: 60,
+    restSec: 120,
     sets: [
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false }
-    ]
-  },
-  {
-    name: 'Rear Delt Raise (Dumbbell)',
-    type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 2.5, targetReps: 12, warmup: false },
-      { targetWeight: 2.5, targetReps: 12, warmup: false },
-      { targetWeight: 2.5, targetReps: 12, warmup: false }
+      { targetWeight: 40, targetReps: 10, warmup: false },
+      { targetWeight: 40, targetReps: 10, warmup: false }
     ]
   },
   {
