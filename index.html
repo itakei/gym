@@ -83,25 +83,17 @@ input {
 .header .meta .session-time { color: var(--accent); font-weight: 600; }
 
 /* Energy selector */
-.energy-row {
+.est-time-bar {
   display: flex;
-  gap: 8px;
-  padding: 8px 16px;
-}
-.energy-btn {
-  flex: 1;
-  padding: 10px 8px;
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text-dim);
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
   font-size: 0.85rem;
-  font-weight: 600;
-  text-align: center;
-  transition: all 0.15s;
+  color: var(--text-dim);
 }
-.energy-btn.active-fresh { background: #2e7d32; color: #fff; }
-.energy-btn.active-normal { background: #f57f17; color: #fff; }
-.energy-btn.active-fatigued { background: #c62828; color: #fff; }
+.est-time-bar .est-label { font-weight: 400; }
+.est-time-bar .est-value { font-weight: 700; color: var(--accent); }
 
 /* Notes */
 .notes-section { padding: 0 16px 8px; }
@@ -773,11 +765,7 @@ input {
     </div>
   </div>
 
-  <div class="energy-row">
-    <button class="energy-btn" data-energy="fresh" onclick="setEnergy('fresh')">Fresh</button>
-    <button class="energy-btn active-normal" data-energy="normal" onclick="setEnergy('normal')">Normal</button>
-    <button class="energy-btn" data-energy="fatigued" onclick="setEnergy('fatigued')">Fatigued</button>
-  </div>
+  <div class="est-time-bar" id="est-time-bar"></div>
 
   <div class="coach-section">
     <button class="coach-toggle" onclick="toggleCoach()">
@@ -1262,22 +1250,34 @@ function saveState() {
 
 // ============ RENDER ============
 function renderAll() {
-  renderEnergy();
+  renderEstTime();
   renderNotes();
   renderExercises();
 }
 
-function renderEnergy() {
-  document.querySelectorAll('.energy-btn').forEach(btn => {
-    const e = btn.dataset.energy;
-    btn.className = 'energy-btn' + (state.energy === e ? (' active-' + e) : '');
+function estimateTime() {
+  let totalSec = 0;
+  const SET_DURATION = 30; // ~30s per weight set
+  state.exercises.forEach(ex => {
+    ex.sets.forEach((set, si) => {
+      if (ex.type === 'time') {
+        totalSec += set.seconds || set.targetSeconds || 60;
+      } else {
+        totalSec += SET_DURATION;
+      }
+      // Add rest between sets (not after last set)
+      if (si < ex.sets.length - 1 && ex.restSec > 0) {
+        totalSec += ex.restSec;
+      }
+    });
   });
+  return Math.round(totalSec / 60);
 }
 
-function setEnergy(val) {
-  state.energy = val;
-  renderEnergy();
-  saveState();
+function renderEstTime() {
+  const min = estimateTime();
+  const bar = document.getElementById('est-time-bar');
+  bar.innerHTML = '<span class="est-label">Estimated:</span><span class="est-value">~' + min + ' min</span>';
 }
 
 function toggleNotes() {
