@@ -131,7 +131,21 @@ input {
   justify-content: space-between;
   align-items: center;
 }
-.exercise-card .card-header h2 { font-size: 1.05rem; font-weight: 700; }
+.exercise-card .card-header h2 { font-size: 1.05rem; font-weight: 700; flex: 1; }
+.remove-exercise-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  opacity: 0.5;
+}
+.remove-exercise-btn:active { opacity: 1; color: var(--red); }
 .exercise-card .card-header .badge {
   font-size: 0.7rem;
   background: var(--surface3);
@@ -976,21 +990,21 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Volume day — build reps at 62.5kg. No ego lifting, clean sets only.",
-  decision: "After set 1 at 62.5: smooth x5 = continue all 4 sets | heavy = drop to 60 x 5 | easy = stay at 62.5, do NOT jump to 65",
+  goal: "Upper hypertrophy — volume bench + rebuild row strength + lateral raises.",
+  decision: "Bench set 1 at 62.5: smooth x5 = do all 4 sets | heavy = drop to 60 x 5 | easy = stay at 62.5, do NOT jump higher",
   do: [
-    "Bench first — warmup then 62.5x5x4",
-    "Lat pulldown 49kg x 12 x 3 (consider 52 if 49 feels light)",
-    "Lateral raise 7.5kg x 12 x 3 — controlled, no swinging",
-    "Rear delt raise 2.5kg x 12 x 3"
+    "Bench first — warmup then 62.5x5x4 (volume day, clean reps)",
+    "Seated row 28kg x 12 x 3 — rebuilding from 21, focus on squeeze",
+    "Lateral raise: try 10kg x 8 — break the 7.5 plateau!",
+    "Rear delt raise 2.5kg x 12 x 3, hammer curl 10kg x 10 x 2"
   ],
   dont: [
     "No heavy singles or doubles — this is volume day",
     "No shoulder press — lateral raises only",
-    "No going above 62.5 on bench today",
-    "No rushing rest between bench sets — full 2 min"
+    "No going above 62.5 on bench",
+    "No rushing rest — full 2 min between bench sets"
   ],
-  next: "Next session (Mon/Tue): Heavy Bench Day — 70x3x3, back + shoulders"
+  next: "Next session (Tue/Wed): Day A — Heavy Bench 70x3, Incline Bench, Lat PD, Face Pull"
 };
 
 function toggleCoach() {
@@ -1175,8 +1189,8 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-03-14';
-const WORKOUT_NAME = 'Bench Volume Day';
+const WORKOUT_DATE = '2026-03-15';
+const WORKOUT_NAME = 'Upper Hypertrophy';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1200,13 +1214,13 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Lat Pulldown (Cable)',
+    name: 'Seated Row (Cable)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false }
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1214,9 +1228,9 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false }
+      { targetWeight: 10, targetReps: 8, warmup: false },
+      { targetWeight: 10, targetReps: 8, warmup: false },
+      { targetWeight: 10, targetReps: 8, warmup: false }
     ]
   },
   {
@@ -1227,6 +1241,15 @@ const DEFAULT_EXERCISES = [
       { targetWeight: 2.5, targetReps: 12, warmup: false },
       { targetWeight: 2.5, targetReps: 12, warmup: false },
       { targetWeight: 2.5, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Hammer Curl (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false }
     ]
   }
 ];
@@ -1427,16 +1450,16 @@ function renderExercises() {
     else if (completedSets === ex.sets.length && ex.sets.length > 0) badge = 'Done';
     else badge = completedSets + '/' + ex.sets.length;
 
-    let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span></div>';
+    let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span>' +
+      '<button class="remove-exercise-btn" onclick="removeExercise(' + ei + ')" title="Remove exercise">&times;</button></div>';
 
     // Column headers
-    const hasRemovable = ex.sets.length > 1;
     if (isStopwatch) {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="flex:1;text-align:center">COUNTDOWN</span><span class="sh-done" style="min-width:72px"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" style="flex:1;text-align:center">COUNTDOWN</span><span class="sh-done" style="min-width:72px"></span><span class="sh-remove"></span></div>';
     } else if (ex.type === 'time') {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleTimeUnit()" style="cursor:pointer">TIME (' + timeLabel() + ')</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleTimeUnit()" style="cursor:pointer">TIME (' + timeLabel() + ')</span><span class="sh-done"></span><span class="sh-remove"></span></div>';
     } else {
-      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleWeightUnit()" style="cursor:pointer">' + weightLabel().toUpperCase() + '</span><span class="sh-col">REPS</span><span class="sh-done"></span>' + (hasRemovable ? '<span class="sh-remove"></span>' : '') + '</div>';
+      html += '<div class="set-header"><span class="sh-label"></span><span class="sh-col" onclick="toggleWeightUnit()" style="cursor:pointer">' + weightLabel().toUpperCase() + '</span><span class="sh-col">REPS</span><span class="sh-done"></span><span class="sh-remove"></span></div>';
     }
 
     ex.sets.forEach((set, si) => {
@@ -1462,8 +1485,6 @@ function renderSetRow(ei, si, set, ex) {
   }
   const displayLabel = set.warmup ? ('W' + warmupIdx) : (ex.type === 'time' ? '1' : '' + workingIdx);
   const labelClass = (set.warmup ? ' warmup' : '');
-  const canRemove = ex.sets.length > 1;
-
   if (ex.type === 'time') {
     const totalSec = set.seconds || 0;
     const isStopwatch = STOPWATCH_EXERCISES.includes(ex.name);
@@ -1501,7 +1522,7 @@ function renderSetRow(ei, si, set, ex) {
         '<div class="plank-time ' + timeClass + '" id="sw-display-' + swKey + '" onclick="editPlankTarget(' + ei + ',' + si + ')">' + timeStr + '</div>' +
         '<button class="plank-action-btn ' + btnClass + '" id="sw-btn-' + swKey + '" onclick="togglePlank(' + ei + ',' + si + ')">' + btnText + '</button>' +
         resultHtml +
-        (canRemove ? '<button class="plank-remove" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+        '<button class="plank-remove" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' +
       '</div>';
     }
     // Regular time input (Cycling etc)
@@ -1517,7 +1538,7 @@ function renderSetRow(ei, si, set, ex) {
       '<button class="done-btn' + (set.done ? ' checked' : '') + '" onclick="toggleDone(' + ei + ',' + si + ')">' +
         (set.done ? '\u2713' : '\u25CB') +
       '</button>' +
-      (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+      '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' +
     '</div>';
   }
 
@@ -1540,7 +1561,7 @@ function renderSetRow(ei, si, set, ex) {
     '<button class="done-btn' + (set.done ? ' checked' : '') + '" onclick="toggleDone(' + ei + ',' + si + ')">' +
       (set.done ? '\u2713' : '\u25CB') +
     '</button>' +
-    (canRemove ? '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' : '') +
+    '<button class="remove-set-btn" onclick="removeSet(' + ei + ',' + si + ')">&times;</button>' +
   '</div>';
 }
 
@@ -1656,8 +1677,19 @@ function addSet(ei) {
 
 function removeSet(ei, si) {
   const ex = state.exercises[ei];
-  if (ex.sets.length <= 1) return;
+  if (ex.sets.length <= 1) {
+    removeExercise(ei);
+    return;
+  }
   ex.sets.splice(si, 1);
+  saveState();
+  renderExercises();
+}
+
+function removeExercise(ei) {
+  const name = state.exercises[ei].name;
+  if (!confirm('Remove ' + name + '?')) return;
+  state.exercises.splice(ei, 1);
   saveState();
   renderExercises();
 }
