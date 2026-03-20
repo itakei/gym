@@ -795,7 +795,7 @@ input {
   <div class="pull-hint" id="pull-hint">Pull to refresh disabled during workout</div>
 
   <div class="header" id="header">
-    <h1 id="workout-name">Upper Push + Delts (Manila)</h1>
+    <h1 id="workout-name">Heavy Bench Day</h1>
     <div class="meta">
       <span id="workout-date">2026-03-11</span>
       <span class="session-time" id="session-time">0:00</span>
@@ -990,21 +990,22 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Manila hotel gym — maintenance block. Keep stimulus, slow tempos if DBs are light.",
-  decision: "If heaviest DB < 15kg: use 3-1-3 tempo on all presses. If 20kg+: normal tempo, RPE 7-8.",
+  goal: "Heavy Bench day — 5 days rest, you're fresh. Push for 70kg triples. Day 1 of 3 in Manila.",
+  decision: "70kg set 1: smooth x3 = do all 3 sets | grinding = drop to 67.5 x 3 | easy = stay at 70, do NOT jump higher",
   do: [
-    "Incline DB press 4x10-12 — upper chest priority, full stretch at bottom",
-    "DB shoulder press 3x10-12 — controlled, no momentum",
-    "Lateral raise 3x12-15 — slow negative, squeeze at top",
-    "Rear delt raise 3x12-15 — 5kg if available, otherwise slow tempo at lighter weight",
-    "Push-ups (slow 3-0-1 tempo) 2x max — finisher for chest"
+    "Bench first — full warmup pyramid then 3x3 @ 70kg (heavy day, controlled reps)",
+    "Lateral raise 7.5kg x 12 x 3 — consolidate before pushing to 10",
+    "Shoulder press 7.5kg x 12 x 3 — back on the menu today",
+    "Triceps extension: match last session (14/14/17 x 13)",
+    "Rear delt 5kg x 12 x 3 — progress from 2.5"
   ],
   dont: [
-    "No ego lifting with hotel DBs — tempo > weight",
-    "No grinding — RPE 7-8 max, this is maintenance",
-    "No skipping rear delts — posture priority"
+    "No volume bench — this is heavy triples day",
+    "No rushing rest — full 2 min between bench working sets",
+    "No going above 70 on bench even if it feels light",
+    "No rows today — save back work for Sunday"
   ],
-  next: "Fri Mar 20: Session B — Lower + Core (Bulgarian split squat, DB RDL, glute bridge, plank, side plank)"
+  next: "Tomorrow (Sat): Lower Body — Hip Thrust 57.5x10, Bulgarian Split Squat, Deadlift 40x10, Plank"
 };
 
 function toggleCoach() {
@@ -1189,29 +1190,28 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-03-17';
-const WORKOUT_NAME = 'Upper Push + Delts (Manila)';
+const WORKOUT_DATE = '2026-03-20';
+const WORKOUT_NAME = 'Upper Push — Heavy Bench (Day 1/3)';
 
 const DEFAULT_EXERCISES = [
   {
-    name: 'Incline Bench Press (Dumbbell)',
-    type: 'weight',
-    restSec: 90,
-    sets: [
-      { targetWeight: 15, targetReps: 10, warmup: false },
-      { targetWeight: 15, targetReps: 10, warmup: false },
-      { targetWeight: 15, targetReps: 10, warmup: false },
-      { targetWeight: 15, targetReps: 10, warmup: false }
-    ]
+    name: 'Cycling (Indoor)',
+    type: 'time',
+    restSec: 0,
+    sets: [{ targetSeconds: 300 }]
   },
   {
-    name: 'Shoulder Press',
+    name: 'Bench Press (Barbell)',
     type: 'weight',
-    restSec: 90,
+    restSec: 120,
     sets: [
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false }
+      { targetWeight: 20, targetReps: 10, warmup: true },
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 55, targetReps: 3, warmup: true },
+      { targetWeight: 60, targetReps: 1, warmup: true },
+      { targetWeight: 70, targetReps: 3, warmup: false },
+      { targetWeight: 70, targetReps: 3, warmup: false },
+      { targetWeight: 70, targetReps: 3, warmup: false }
     ]
   },
   {
@@ -1225,6 +1225,26 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
+    name: 'Shoulder Press (Dumbbell)',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Triceps Extension',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 14, targetReps: 13, warmup: false },
+      { targetWeight: 14, targetReps: 13, warmup: false },
+      { targetWeight: 17, targetReps: 13, warmup: false }
+    ]
+  },
+  {
     name: 'Rear Delt Raise (Dumbbell)',
     type: 'weight',
     restSec: 60,
@@ -1232,15 +1252,6 @@ const DEFAULT_EXERCISES = [
       { targetWeight: 5, targetReps: 12, warmup: false },
       { targetWeight: 5, targetReps: 12, warmup: false },
       { targetWeight: 5, targetReps: 12, warmup: false }
-    ]
-  },
-  {
-    name: 'Push Up',
-    type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 0, targetReps: 20, warmup: false },
-      { targetWeight: 0, targetReps: 20, warmup: false }
     ]
   }
 ];
