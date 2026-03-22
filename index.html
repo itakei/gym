@@ -797,7 +797,7 @@ input {
   <div class="header" id="header">
     <h1 id="workout-name">Heavy Bench Day</h1>
     <div class="meta">
-      <span id="workout-date">2026-03-21</span>
+      <span id="workout-date">2026-03-22</span>
       <span class="session-time" id="session-time">0:00</span>
     </div>
   </div>
@@ -1190,8 +1190,8 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-03-21';
-const WORKOUT_NAME = 'Lower Body (Day 2/3)';
+const WORKOUT_DATE = '2026-03-22';
+const WORKOUT_NAME = 'Upper Pull — Hypertrophy (Day 3/3)';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1201,44 +1201,55 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 300 }]
   },
   {
-    name: 'Hip Thrust (Barbell)',
+    name: 'Bench Press (Barbell)',
     type: 'weight',
-    restSec: 90,
+    restSec: 120,
     sets: [
-      { targetWeight: 40, targetReps: 12, warmup: false },
-      { targetWeight: 40, targetReps: 12, warmup: false },
-      { targetWeight: 40, targetReps: 12, warmup: false },
-      { targetWeight: 40, targetReps: 12, warmup: false },
-      { targetWeight: 40, targetReps: 12, warmup: false }
+      { targetWeight: 20, targetReps: 10, warmup: true },
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 62.5, targetReps: 5, warmup: false },
+      { targetWeight: 62.5, targetReps: 5, warmup: false },
+      { targetWeight: 62.5, targetReps: 5, warmup: false },
+      { targetWeight: 62.5, targetReps: 5, warmup: false }
     ]
   },
   {
-    name: 'Bulgarian Split Squat',
+    name: 'Lat Pulldown (Cable)',
     type: 'weight',
-    restSec: 90,
+    restSec: 60,
     sets: [
-      { targetWeight: 0, targetReps: 10, warmup: false },
-      { targetWeight: 0, targetReps: 10, warmup: false },
-      { targetWeight: 0, targetReps: 10, warmup: false }
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Deadlift (Barbell)',
+    name: 'Seated Row (Cable)',
     type: 'weight',
-    restSec: 90,
+    restSec: 60,
     sets: [
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false }
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Plank',
-    type: 'time',
-    restSec: 90,
+    name: 'Hammer Curl (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
     sets: [
-      { targetSeconds: 60 },
-      { targetSeconds: 60 }
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false }
+    ]
+  },
+  {
+    name: 'Bent Over Row (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false }
     ]
   }
 ];
