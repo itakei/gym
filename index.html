@@ -797,7 +797,7 @@ input {
   <div class="header" id="header">
     <h1 id="workout-name">Heavy Bench Day</h1>
     <div class="meta">
-      <span id="workout-date">2026-03-22</span>
+      <span id="workout-date">2026-03-26</span>
       <span class="session-time" id="session-time">0:00</span>
     </div>
   </div>
@@ -1190,8 +1190,8 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-03-22';
-const WORKOUT_NAME = 'Upper Pull — Hypertrophy (Day 3/3)';
+const WORKOUT_DATE = '2026-03-26';
+const WORKOUT_NAME = 'Full Body (Last Before Break)';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1214,23 +1214,35 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Lat Pulldown (Cable)',
+    name: 'Hip Thrust (Barbell)',
     type: 'weight',
-    restSec: 60,
+    restSec: 90,
     sets: [
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false }
+      { targetWeight: 35, targetReps: 12, warmup: false },
+      { targetWeight: 35, targetReps: 12, warmup: false },
+      { targetWeight: 35, targetReps: 12, warmup: false },
+      { targetWeight: 35, targetReps: 12, warmup: false },
+      { targetWeight: 35, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Seated Row (Cable)',
+    name: 'Deadlift (Barbell)',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 30, targetReps: 13, warmup: false },
+      { targetWeight: 30, targetReps: 13, warmup: false },
+      { targetWeight: 30, targetReps: 13, warmup: false }
+    ]
+  },
+  {
+    name: 'Lateral Raise (Dumbbell)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 28, targetReps: 12, warmup: false },
-      { targetWeight: 28, targetReps: 12, warmup: false },
-      { targetWeight: 28, targetReps: 12, warmup: false }
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1238,18 +1250,17 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false }
+      { targetWeight: 14, targetReps: 10, warmup: false },
+      { targetWeight: 14, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Bent Over Row (Dumbbell)',
-    type: 'weight',
-    restSec: 60,
+    name: 'Plank',
+    type: 'time',
+    restSec: 90,
     sets: [
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false }
+      { targetSeconds: 65 },
+      { targetSeconds: 65 }
     ]
   }
 ];
