@@ -1201,14 +1201,14 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 600 }]
   },
   {
-    name: 'Hip Thrust (Barbell)',
+    name: 'Hip Thrust (Dumbbell)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false }
+      { targetWeight: 20, targetReps: 12, warmup: false },
+      { targetWeight: 20, targetReps: 12, warmup: false },
+      { targetWeight: 20, targetReps: 12, warmup: false },
+      { targetWeight: 20, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1586,20 +1586,35 @@ function setWeightFromInput(ei, si, val) {
 
 function stepVal(ei, si, field, delta) {
   const set = state.exercises[ei].sets[si];
+  let newVal;
   if (field === 'weight') {
     const deltaKg = units.weight === 'lbs' ? delta / KG_TO_LBS : delta;
-    const newVal = Math.max(0, (set.weight || 0) + deltaKg);
+    newVal = Math.max(0, (set.weight || 0) + deltaKg);
     set.weight = Math.round(newVal * 10) / 10;
   } else {
-    const newVal = Math.max(0, (set[field] || 0) + delta);
+    newVal = Math.max(0, (set[field] || 0) + delta);
     set[field] = Math.round(newVal * 10) / 10;
   }
+  // Apply to subsequent unfinished sets
+  const sets = state.exercises[ei].sets;
+  let applied = 0;
+  for (let i = si + 1; i < sets.length; i++) {
+    if (!sets[i].done && !sets[i].warmup) {
+      if (field === 'weight') sets[i].weight = set.weight;
+      else sets[i][field] = set[field];
+      applied++;
+    }
+  }
   saveState();
-  const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
-  if (rows.length) {
-    const inputs = rows[0].querySelectorAll('.stepper-input');
-    if (field === 'weight' && inputs[0]) inputs[0].value = displayWeight(set.weight);
-    if (field === 'reps' && inputs[1]) inputs[1].value = set.reps;
+  if (applied > 0) {
+    renderExercises();
+  } else {
+    const rows = document.querySelectorAll('.set-row[data-ei="' + ei + '"][data-si="' + si + '"]');
+    if (rows.length) {
+      const inputs = rows[0].querySelectorAll('.stepper-input');
+      if (field === 'weight' && inputs[0]) inputs[0].value = displayWeight(set.weight);
+      if (field === 'reps' && inputs[1]) inputs[1].value = set.reps;
+    }
   }
 }
 
