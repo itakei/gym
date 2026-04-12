@@ -797,7 +797,7 @@ input {
   <div class="header" id="header">
     <h1 id="workout-name">Heavy Bench Day</h1>
     <div class="meta">
-      <span id="workout-date">2026-04-12</span>
+      <span id="workout-date">2026-04-13</span>
       <span class="session-time" id="session-time">0:00</span>
     </div>
   </div>
@@ -1190,8 +1190,8 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-12';
-const WORKOUT_NAME = 'Full Body — Moderate (Comeback Day 1)';
+const WORKOUT_DATE = '2026-04-13';
+const WORKOUT_NAME = 'Pull + Accessories (Comeback Day 2)';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1201,55 +1201,63 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 600 }]
   },
   {
-    name: 'Hip Thrust (Dumbbell)',
+    name: 'Lat Pulldown (Cable)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 20, targetReps: 12, warmup: false },
-      { targetWeight: 20, targetReps: 12, warmup: false },
-      { targetWeight: 20, targetReps: 12, warmup: false },
-      { targetWeight: 20, targetReps: 12, warmup: false }
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false },
+      { targetWeight: 49, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Bench Press (Barbell)',
-    type: 'weight',
-    restSec: 120,
-    sets: [
-      { targetWeight: 20, targetReps: 10, warmup: true },
-      { targetWeight: 40, targetReps: 5, warmup: true },
-      { targetWeight: 60, targetReps: 5, warmup: false },
-      { targetWeight: 60, targetReps: 5, warmup: false },
-      { targetWeight: 60, targetReps: 5, warmup: false }
-    ]
-  },
-  {
-    name: 'Deadlift (Barbell)',
+    name: 'Seated Row (Cable)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 40, targetReps: 8, warmup: false },
-      { targetWeight: 40, targetReps: 8, warmup: false },
-      { targetWeight: 40, targetReps: 8, warmup: false }
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Lateral Raise (Dumbbell)',
+    name: 'Shoulder Press (Dumbbell)',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 10, targetReps: 12, warmup: false },
+      { targetWeight: 10, targetReps: 12, warmup: false },
+      { targetWeight: 10, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Bulgarian Split Squat',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 0, targetReps: 12, warmup: false },
+      { targetWeight: 0, targetReps: 12, warmup: false },
+      { targetWeight: 0, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Rear Delt Raise (Dumbbell)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false }
+      { targetWeight: 6, targetReps: 12, warmup: false },
+      { targetWeight: 6, targetReps: 12, warmup: false },
+      { targetWeight: 6, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Plank',
-    type: 'time',
-    restSec: 90,
+    name: 'Hammer Curl (Dumbbell)',
+    type: 'weight',
+    restSec: 60,
     sets: [
-      { targetSeconds: 60 },
-      { targetSeconds: 60 }
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false },
+      { targetWeight: 10, targetReps: 10, warmup: false }
     ]
   }
 ];
