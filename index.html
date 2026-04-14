@@ -1126,6 +1126,7 @@ function togglePlank(ei, si) {
     const elapsed = Math.floor((Date.now() - activeStopwatches[key].startTime) / 1000);
     set.seconds = elapsed;
     set.done = true;
+    ensureStartTime();
     activeStopwatches[key].running = false;
     saveState();
     renderExercises();
@@ -1373,7 +1374,7 @@ function initFreshState() {
     energy: 'normal',
     gym: null,
     notes: '',
-    startTime: Date.now(),
+    startTime: null,
     exercises: DEFAULT_EXERCISES.map(ex => ({
       name: ex.name,
       type: ex.type,
@@ -1664,6 +1665,7 @@ function updateTime(ei, si, part, val) {
 function toggleDone(ei, si) {
   const set = state.exercises[ei].sets[si];
   set.done = !set.done;
+  if (set.done) ensureStartTime();
   saveState();
   renderExercises();
   if (set.done) {
@@ -1878,6 +1880,10 @@ let sessionInterval = null;
 function startSessionTimer() {
   const el = document.getElementById('session-time');
   function update() {
+    if (!state.startTime) {
+      el.textContent = '0:00';
+      return;
+    }
     const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
     const h = Math.floor(elapsed / 3600);
     const m = Math.floor((elapsed % 3600) / 60);
@@ -1886,6 +1892,13 @@ function startSessionTimer() {
   }
   update();
   sessionInterval = setInterval(update, 1000);
+}
+
+function ensureStartTime() {
+  if (!state.startTime) {
+    state.startTime = Date.now();
+    saveState();
+  }
 }
 
 // ============ FINISH WORKOUT ============
