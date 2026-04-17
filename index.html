@@ -363,6 +363,31 @@ input {
   border-radius: var(--radius);
 }
 .finish-btn:active { opacity: 0.85; }
+.finish-btn.pause-mode { background: var(--orange); }
+.defer-btn {
+  background: transparent; color: var(--text-dim); border: 1px solid var(--surface3);
+  padding: 4px 10px; font-size: 0.7rem; border-radius: 6px; margin-left: 4px; cursor: pointer;
+}
+.defer-btn:hover { color: var(--orange); border-color: var(--orange); }
+.exercise-card.deferred { opacity: 0.6; }
+.exercise-card.deferred .deferred-msg {
+  padding: 14px; text-align: center; font-size: 0.85rem; color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.undefer-btn {
+  background: transparent; color: var(--green); border: 1px solid var(--green);
+  padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;
+}
+.home-banner {
+  background: var(--surface2); border: 1px solid var(--orange); border-radius: var(--radius);
+  padding: 14px; margin-bottom: 12px; color: var(--text);
+}
+.home-banner .hb-title { font-weight: 700; color: var(--orange); margin-bottom: 6px; }
+.home-banner .hb-list { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 10px; }
+.home-banner button {
+  background: var(--green); color: #000; border: none; padding: 10px 16px;
+  border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.9rem;
+}
 .history-btn {
   padding: 16px 20px;
   background: var(--surface2);
@@ -828,6 +853,7 @@ input {
     <textarea class="notes-area" id="notes-area" placeholder="Session notes..."></textarea>
   </div>
 
+  <div id="home-banner-slot"></div>
   <div class="exercises" id="exercises-container"></div>
 
   <div class="add-exercise-section">
@@ -1195,7 +1221,7 @@ function isTimeBased(name) {
 // ============ DATA ============
 const WORKOUT_DATE = '2026-04-17';
 const WORKOUT_NAME = 'Pull + Accessories (Day B) — ASB';
-const BUILD_STAMP = '2026-04-17 12:03 KL';
+const BUILD_STAMP = '2026-04-17 12:45 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1263,6 +1289,8 @@ let state = {
   energy: 'normal',
   notes: '',
   startTime: null,
+  gymPauseTime: null,
+  homeResumeTime: null,
   exercises: [],
   finished: false
 };
@@ -1337,7 +1365,7 @@ function init() {
     try {
       const parsed = JSON.parse(saved);
       if (parsed.date === WORKOUT_DATE && !parsed.finished) {
-        state = parsed;
+        state = migrateState(parsed);
       } else {
         initFreshState();
       }
@@ -1352,6 +1380,7 @@ function init() {
   renderCoach();
   renderGym();
   startSessionTimer();
+  updateFinishButton();
   preventPullToRefresh();
   if (!state.gym) detectGym();
 }
@@ -1371,10 +1400,13 @@ function initFreshState() {
     gym: null,
     notes: '',
     startTime: null,
+    gymPauseTime: null,
+    homeResumeTime: null,
     exercises: DEFAULT_EXERCISES.map(ex => ({
       name: ex.name,
       type: ex.type,
       restSec: ex.restSec,
+      location: 'gym',
       sets: ex.sets.map(s => {
         if (ex.type === 'time') {
           return { targetSeconds: s.targetSeconds, seconds: s.targetSeconds, done: false };
@@ -1390,8 +1422,93 @@ function initFreshState() {
   };
 }
 
+function migrateState(s) {
+  if (!s) return s;
+  if (s.gymPauseTime === undefined) s.gymPauseTime = null;
+  if (s.homeResumeTime === undefined) s.homeResumeTime = null;
+  if (Array.isArray(s.exercises)) {
+    s.exercises.forEach(ex => { if (!ex.location) ex.location = 'gym'; });
+  }
+  return s;
+}
+
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ============ DEFER TO HOME ============
+function deferToHome(ei) {
+  state.exercises[ei].location = 'home';
+  saveState();
+  renderExercises();
+  updateFinishButton();
+}
+
+function undeferExercise(ei) {
+  state.exercises[ei].location = 'gym';
+  saveState();
+  renderExercises();
+  updateFinishButton();
+}
+
+function pauseAtGym() {
+  state.gymPauseTime = Date.now();
+  saveState();
+  renderExercises();
+  updateFinishButton();
+  alert('Gym session paused. Open the app at home to finish your deferred exercises.');
+}
+
+function resumeAtHome() {
+  state.homeResumeTime = Date.now();
+  saveState();
+  renderExercises();
+  updateFinishButton();
+}
+
+function hasIncompleteHomeExercise() {
+  return state.exercises.some(ex =>
+    ex.location === 'home' && ex.sets.filter(s => s.done).length < ex.sets.length);
+}
+
+function renderHomeBanner() {
+  const slot = document.getElementById('home-banner-slot');
+  if (!slot) return;
+  const paused = state.gymPauseTime && !state.homeResumeTime;
+  if (!paused) { slot.innerHTML = ''; return; }
+  const pending = state.exercises
+    .filter(ex => ex.location === 'home' && ex.sets.filter(s => s.done).length < ex.sets.length)
+    .map(ex => esc(ex.name));
+  if (pending.length === 0) { slot.innerHTML = ''; return; }
+  slot.innerHTML =
+    '<div class="home-banner">' +
+      '<div class="hb-title">🏠 Gym session paused</div>' +
+      '<div class="hb-list">Finish at home: ' + pending.join(', ') + '</div>' +
+      '<button onclick="resumeAtHome()">I\'m home — resume</button>' +
+      ' <button onclick="undoPause()" style="background:transparent;color:var(--text-dim);border:1px solid var(--surface3);">Undo pause</button>' +
+    '</div>';
+}
+
+function undoPause() {
+  state.gymPauseTime = null;
+  state.homeResumeTime = null;
+  saveState();
+  renderExercises();
+  updateFinishButton();
+}
+
+function updateFinishButton() {
+  const btn = document.querySelector('.finish-btn');
+  if (!btn) return;
+  const paused = state.gymPauseTime && !state.homeResumeTime;
+  const hasHome = hasIncompleteHomeExercise();
+  if (hasHome && !paused) {
+    btn.textContent = 'Pause at Gym';
+    btn.classList.add('pause-mode');
+  } else {
+    btn.textContent = 'Finish Workout';
+    btn.classList.remove('pause-mode');
+  }
 }
 
 // ============ RENDER ============
@@ -1441,8 +1558,10 @@ function renderNotes() {
 }
 
 function renderExercises() {
+  renderHomeBanner();
   const container = document.getElementById('exercises-container');
   container.innerHTML = '';
+  const paused = state.gymPauseTime && !state.homeResumeTime;
   state.exercises.forEach((ex, ei) => {
     const card = document.createElement('div');
     card.className = 'exercise-card';
@@ -1451,11 +1570,36 @@ function renderExercises() {
     const isStopwatch = STOPWATCH_EXERCISES.includes(ex.name);
     const isCycling = ex.type === 'time' && !isStopwatch;
     let badge;
-    if (isCycling) badge = 'Warm-up';
+    if (ex.location === 'home' && completedSets < ex.sets.length) badge = 'Home';
+    else if (isCycling) badge = 'Warm-up';
     else if (completedSets === ex.sets.length && ex.sets.length > 0) badge = 'Done';
     else badge = completedSets + '/' + ex.sets.length;
 
+    // Deferred (and not yet completed) exercises render as collapsed,
+    // EXCEPT once user has resumed at home — then expand them so they can be completed.
+    const isDeferredCollapsed = ex.location === 'home' &&
+      completedSets < ex.sets.length &&
+      !state.homeResumeTime;
+    if (isDeferredCollapsed) {
+      card.className += ' deferred';
+      card.innerHTML = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span></div>' +
+        '<div class="deferred-msg">Deferred — finish at home' +
+        '<button class="undefer-btn" onclick="undeferExercise(' + ei + ')">Move back to gym</button></div>';
+      container.appendChild(card);
+      return;
+    }
+    // Once gym session has been paused (whether currently paused or already resumed at home),
+    // dim gym-location exercises so focus is on home work.
+    if (state.gymPauseTime && ex.location === 'gym') {
+      card.style.opacity = '0.5';
+    }
+
+    const deferBtn = (ex.location === 'gym' && completedSets < ex.sets.length && !state.gymPauseTime)
+      ? '<button class="defer-btn" onclick="deferToHome(' + ei + ')" title="Do this exercise at home">🏠 Defer</button>'
+      : '';
+
     let html = '<div class="card-header"><h2>' + esc(ex.name) + '</h2><span class="badge">' + badge + '</span>' +
+      deferBtn +
       '<button class="remove-exercise-btn" onclick="removeExercise(' + ei + ')" title="Remove exercise">&times;</button></div>';
 
     // Column headers
@@ -1477,6 +1621,7 @@ function renderExercises() {
     card.innerHTML = html;
     container.appendChild(card);
   });
+  updateFinishButton();
 }
 
 function renderSetRow(ei, si, set, ex) {
@@ -1873,6 +2018,20 @@ function vibrateDevice() {
 
 // ============ SESSION TIMER ============
 let sessionInterval = null;
+function activeElapsedSec() {
+  if (!state.startTime) return 0;
+  const paused = state.gymPauseTime && !state.homeResumeTime;
+  if (paused) {
+    return Math.floor((state.gymPauseTime - state.startTime) / 1000);
+  }
+  if (state.gymPauseTime && state.homeResumeTime) {
+    const gymPart = state.gymPauseTime - state.startTime;
+    const homePart = Date.now() - state.homeResumeTime;
+    return Math.floor((gymPart + homePart) / 1000);
+  }
+  return Math.floor((Date.now() - state.startTime) / 1000);
+}
+
 function startSessionTimer() {
   const el = document.getElementById('session-time');
   function update() {
@@ -1880,11 +2039,13 @@ function startSessionTimer() {
       el.textContent = '0:00';
       return;
     }
-    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const elapsed = activeElapsedSec();
     const h = Math.floor(elapsed / 3600);
     const m = Math.floor((elapsed % 3600) / 60);
     const s = elapsed % 60;
-    el.textContent = (h > 0 ? h + ':' : '') + (h > 0 ? String(m).padStart(2,'0') : m) + ':' + String(s).padStart(2, '0');
+    const txt = (h > 0 ? h + ':' : '') + (h > 0 ? String(m).padStart(2,'0') : m) + ':' + String(s).padStart(2, '0');
+    const paused = state.gymPauseTime && !state.homeResumeTime;
+    el.textContent = paused ? (txt + ' (paused)') : txt;
   }
   update();
   sessionInterval = setInterval(update, 1000);
@@ -1907,13 +2068,24 @@ function resetWorkout() {
 }
 
 function finishWorkout() {
+  // If there's an incomplete deferred (home) exercise and we haven't paused yet,
+  // this button means "Pause at Gym" instead of "Finish".
+  const pausedAlready = state.gymPauseTime && !state.homeResumeTime;
+  if (hasIncompleteHomeExercise() && !pausedAlready) {
+    if (!confirm('Pause the gym session and finish ' +
+        state.exercises.filter(ex => ex.location === 'home' && ex.sets.filter(s => s.done).length < ex.sets.length).length +
+        ' deferred exercise(s) at home?')) return;
+    pauseAtGym();
+    return;
+  }
+
   const completedSets = state.exercises.reduce((a, ex) => a + ex.sets.filter(s => s.done).length, 0);
   if (completedSets === 0) {
     if (!confirm('No sets completed. Finish anyway?')) return;
   }
   if (!confirm('Finish this workout?')) return;
 
-  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const elapsed = activeElapsedSec();
   const durationMin = Math.round(elapsed / 60);
 
   const exportData = buildExportJSON(durationMin);
