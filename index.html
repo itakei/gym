@@ -991,22 +991,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Heavy Bench day — 5 days rest, you're fresh. Push for 70kg triples. Day 1 of 3 in Manila.",
-  decision: "70kg set 1: smooth x3 = do all 3 sets | grinding = drop to 67.5 x 3 | easy = stay at 70, do NOT jump higher",
+  goal: "Day B (Pull + Accessories) at ASB. Reload week wrap-up — rebuild back/posture after Japan break. ASB has no seated row, so use barbell row instead.",
+  decision: "Lat PD set 1 @ 49kg: easy x12 = test 52kg on set 2 (break the 4-month stall) | solid = stay 49 x 12 x 3 | grindy = stay 49 and end with clean reps",
   do: [
-    "Bench first — full warmup pyramid then 3x3 @ 70kg (heavy day, controlled reps)",
-    "Lateral raise 7.5kg x 12 x 3 — consolidate before pushing to 10",
-    "Shoulder press 7.5kg x 12 x 3 — back on the menu today",
-    "Triceps extension: match last session (14/14/17 x 13)",
-    "Rear delt 5kg x 12 x 3 — progress from 2.5"
+    "Cycling 5 min warmup first",
+    "Lat Pulldown FIRST while back is fresh — 49 x 12 x 3, attempt 52 if set 1 is smooth",
+    "Barbell Bent Over Row 20kg x 10 x 3 — rebuilding from rest; control the eccentric, no kipping",
+    "Rear Delt 5kg x 12 x 3 — strict, slow, retract the scapula",
+    "Hammer Curl 10kg x 10 x 3",
+    "Triceps Extension 14kg x 12 x 3 — finish the session"
   ],
   dont: [
-    "No volume bench — this is heavy triples day",
-    "No rushing rest — full 2 min between bench working sets",
-    "No going above 70 on bench even if it feels light",
-    "No rows today — save back work for Sunday"
+    "No bench today — you benched Wed (Apr 15)",
+    "No shoulder press — saved for Day C on Sunday",
+    "No going above 52 on lat PD — break the stall first, then push",
+    "No swinging the barbell row — if form breaks, drop the weight"
   ],
-  next: "Tomorrow (Sat): Lower Body — Hip Thrust 57.5x10, Bulgarian Split Squat, Deadlift 40x10, Plank"
+  next: "Sun Apr 19 — Day C (Sri Penaga): DB Hip Thrust 30x10, Deadlift 45x8x3, BSS +5kg DBs x 10 x 2, Shoulder Press 10x12, Lateral 7.5x12"
 };
 
 function toggleCoach() {
@@ -1194,7 +1195,7 @@ function isTimeBased(name) {
 // ============ DATA ============
 const WORKOUT_DATE = '2026-04-17';
 const WORKOUT_NAME = 'Pull + Accessories (Day B) — ASB';
-const BUILD_STAMP = '2026-04-17 11:59 KL';
+const BUILD_STAMP = '2026-04-17 12:03 KL';
 
 const DEFAULT_EXERCISES = [
   {
