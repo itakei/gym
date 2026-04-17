@@ -795,10 +795,11 @@ input {
   <div class="pull-hint" id="pull-hint">Pull to refresh disabled during workout</div>
 
   <div class="header" id="header">
-    <h1 id="workout-name">Heavy Bench Day</h1>
+    <h1 id="workout-name">Loading...</h1>
     <div class="meta">
-      <span id="workout-date">2026-04-15</span>
+      <span id="workout-date"></span>
       <span class="session-time" id="session-time">0:00</span>
+      <span id="build-stamp" style="margin-left:auto;opacity:0.5;font-size:0.75em;"></span>
     </div>
   </div>
 
@@ -1193,6 +1194,7 @@ function isTimeBased(name) {
 // ============ DATA ============
 const WORKOUT_DATE = '2026-04-17';
 const WORKOUT_NAME = 'Pull + Accessories (Day B) — ASB';
+const BUILD_STAMP = '2026-04-17 v2';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1342,6 +1344,9 @@ function init() {
   } else {
     initFreshState();
   }
+  document.getElementById('workout-name').textContent = WORKOUT_NAME;
+  document.getElementById('workout-date').textContent = WORKOUT_DATE;
+  document.getElementById('build-stamp').textContent = 'build ' + BUILD_STAMP;
   renderAll();
   renderCoach();
   renderGym();
