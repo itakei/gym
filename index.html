@@ -1017,23 +1017,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull + Accessories) at ASB. Reload week wrap-up — rebuild back/posture after Japan break. ASB has no seated row, so use barbell row instead.",
-  decision: "Lat PD set 1 @ 49kg: easy x12 = test 52kg on set 2 (break the 4-month stall) | solid = stay 49 x 12 x 3 | grindy = stay 49 and end with clean reps",
+  goal: "Day B (Pull + Accessories) at Sri Penaga. 4 days fully rested — prime conditions to (a) break the 4-month lat PD stall and (b) keep rebuilding the seated row from its 42→28kg regression.",
+  decision: "Lat PD set 1 @ 49kg: easy x12 = test 52kg on set 2 (break the stall) | solid x12 = stay 49 x 12 x 3 | grindy = stay 49, end with clean reps. Seated row: if 28x12 feels easy across all 3 sets → next session try 30.",
   do: [
     "Cycling 5 min warmup first",
     "Lat Pulldown FIRST while back is fresh — 49 x 12 x 3, attempt 52 if set 1 is smooth",
-    "Barbell Bent Over Row 20kg x 10 x 3 — rebuilding from rest; control the eccentric, no kipping",
-    "Rear Delt 5kg x 12 x 3 — strict, slow, retract the scapula",
+    "Seated Row 28kg x 12 x 3 — strict form, full stretch then squeeze (this is the rebuild lift)",
+    "Rear Delt 5kg x 12 x 3 — slow, retract scapula, no momentum",
     "Hammer Curl 10kg x 10 x 3",
-    "Overhead DB Triceps Extension 7.5kg x 12 x 3 (single DB, both hands) — ASB has no cable, this hits the long head better anyway"
+    "Triceps Extension (Cable) 14kg x 12 x 3 — finish the session"
   ],
   dont: [
     "No bench today — you benched Wed (Apr 15)",
-    "No shoulder press — saved for Day C on Sunday",
-    "No going above 52 on lat PD — break the stall first, then push",
-    "No swinging the barbell row — if form breaks, drop the weight"
+    "No shoulder press — saved for Day C on Tuesday",
+    "No going above 52kg on lat PD — break the stall first, then push next session",
+    "No ego-loading the seated row — 28kg with strict form > 35kg with body english"
   ],
-  next: "Sun Apr 19 — Day C (Sri Penaga): DB Hip Thrust 30x10, Deadlift 45x8x3, BSS +5kg DBs x 10 x 2, Shoulder Press 10x12, Lateral 7.5x12"
+  next: "Tue Apr 21 — Day C (Lower + Shoulders): DB Hip Thrust 30x10, Deadlift 45x8x3, BSS +5kg DBs x 10 x 2, Shoulder Press 10x12, Lateral 7.5x12"
 };
 
 function toggleCoach() {
@@ -1219,9 +1219,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-17';
-const WORKOUT_NAME = 'Pull + Accessories (Day B) — ASB';
-const BUILD_STAMP = '2026-04-17 13:52 KL';
+const WORKOUT_DATE = '2026-04-19';
+const WORKOUT_NAME = 'Pull + Accessories (Day B) — Sri Penaga';
+const BUILD_STAMP = '2026-04-19 10:49 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1241,13 +1241,13 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Bent Over Row (Barbell)',
+    name: 'Seated Row (Cable)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 20, targetReps: 10, warmup: false },
-      { targetWeight: 20, targetReps: 10, warmup: false },
-      { targetWeight: 20, targetReps: 10, warmup: false }
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false },
+      { targetWeight: 28, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1271,13 +1271,13 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Overhead Triceps Extension (Dumbbell)',
+    name: 'Triceps Extension (Cable)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false }
+      { targetWeight: 14, targetReps: 12, warmup: false },
+      { targetWeight: 14, targetReps: 12, warmup: false },
+      { targetWeight: 14, targetReps: 12, warmup: false }
     ]
   }
 ];
