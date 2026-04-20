@@ -1017,23 +1017,24 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull + Accessories) at Sri Penaga. 4 days fully rested — prime conditions to (a) break the 4-month lat PD stall and (b) keep rebuilding the seated row from its 42→28kg regression.",
-  decision: "Lat PD set 1 @ 49kg: easy x12 = test 52kg on set 2 (break the stall) | solid x12 = stay 49 x 12 x 3 | grindy = stay 49, end with clean reps. Seated row: if 28x12 feels easy across all 3 sets → next session try 30.",
+  goal: "Day C (Lower + Shoulders) at Sri Penaga. Back-to-back day after pull — different muscle groups so it's fine. Two firsts today: BSS finally loaded (5kg DBs) and Deadlift past 40kg.",
+  decision: "Hip thrust set 1 @ 30kg: smooth x10 = stay for 3 sets | grindy = drop to 25 x 10 x 3. BSS 5kg: if both sets clean → +2.5kg per side next time. Deadlift 45x8 set 1: solid = do all 3 | grindy = drop to 42.5.",
   do: [
     "Cycling 5 min warmup first",
-    "Lat Pulldown FIRST while back is fresh — 49 x 12 x 3, attempt 52 if set 1 is smooth",
-    "Seated Row 28kg x 12 x 3 — strict form, full stretch then squeeze (this is the rebuild lift)",
-    "Rear Delt 5kg x 12 x 3 — slow, retract scapula, no momentum",
-    "Hammer Curl 10kg x 10 x 3",
-    "Triceps Extension (Cable) 14kg x 12 x 3 — finish the session"
+    "DB Hip Thrust 30 x 10 x 3 — drive through heels, full lockout, squeeze glutes hard at top",
+    "Deadlift: warm 40x5 → 45 x 8 x 3 — controlled eccentric, no bouncing the plates",
+    "Bulgarian Split Squat WITH 5kg DBs x 10 x 2 — first time loaded after 9 months bodyweight; expect harder than expected",
+    "Shoulder Press DB 10kg x 10 x 3 — strict, no leg drive",
+    "Lateral Raise 7.5kg x 12 x 3",
+    "Plank 60s x 2"
   ],
   dont: [
-    "No bench today — you benched Wed (Apr 15)",
-    "No shoulder press — saved for Day C on Tuesday",
-    "No going above 52kg on lat PD — break the stall first, then push next session",
-    "No ego-loading the seated row — 28kg with strict form > 35kg with body english"
+    "No rear delt today — hit yesterday, give it a break",
+    "No bench today — saved for Day A on Wednesday",
+    "No grinding BSS — if you can't hit 8 strict reps with 5kg, drop to 2.5kg DBs",
+    "No going heavier than 45 on deadlift today — first time past 40 in months, build the pattern"
   ],
-  next: "Tue Apr 21 — Day C (Lower + Shoulders): DB Hip Thrust 30x10, Deadlift 45x8x3, BSS +5kg DBs x 10 x 2, Shoulder Press 10x12, Lateral 7.5x12"
+  next: "Wed Apr 22 — Day A (Push week starts): Bench warmup → 70 x 3 x 3 (heavy!), DB HT 35x10, Incline Bench 30x8, Lateral 7.5x12, Plank 70s"
 };
 
 function toggleCoach() {
@@ -1219,9 +1220,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-19';
-const WORKOUT_NAME = 'Pull + Accessories (Day B) — Sri Penaga';
-const BUILD_STAMP = '2026-04-19 10:49 KL';
+const WORKOUT_DATE = '2026-04-20';
+const WORKOUT_NAME = 'Lower + Shoulders (Day C) — Sri Penaga';
+const BUILD_STAMP = '2026-04-20 13:58 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1231,39 +1232,39 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 300 }]
   },
   {
-    name: 'Lat Pulldown (Cable)',
+    name: 'Hip Thrust (Dumbbell)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false },
-      { targetWeight: 49, targetReps: 12, warmup: false }
+      { targetWeight: 30, targetReps: 10, warmup: false },
+      { targetWeight: 30, targetReps: 10, warmup: false },
+      { targetWeight: 30, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Seated Row (Cable)',
+    name: 'Deadlift (Barbell)',
+    type: 'weight',
+    restSec: 120,
+    sets: [
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 45, targetReps: 8, warmup: false },
+      { targetWeight: 45, targetReps: 8, warmup: false },
+      { targetWeight: 45, targetReps: 8, warmup: false }
+    ]
+  },
+  {
+    name: 'Bulgarian Split Squat',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 28, targetReps: 12, warmup: false },
-      { targetWeight: 28, targetReps: 12, warmup: false },
-      { targetWeight: 28, targetReps: 12, warmup: false }
+      { targetWeight: 5, targetReps: 10, warmup: false },
+      { targetWeight: 5, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Rear Delt Raise (Dumbbell)',
+    name: 'Shoulder Press (Dumbbell)',
     type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 5, targetReps: 12, warmup: false },
-      { targetWeight: 5, targetReps: 12, warmup: false },
-      { targetWeight: 5, targetReps: 12, warmup: false }
-    ]
-  },
-  {
-    name: 'Hammer Curl (Dumbbell)',
-    type: 'weight',
-    restSec: 60,
+    restSec: 90,
     sets: [
       { targetWeight: 10, targetReps: 10, warmup: false },
       { targetWeight: 10, targetReps: 10, warmup: false },
@@ -1271,13 +1272,22 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Triceps Extension (Cable)',
+    name: 'Lateral Raise (Dumbbell)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 14, targetReps: 12, warmup: false },
-      { targetWeight: 14, targetReps: 12, warmup: false },
-      { targetWeight: 14, targetReps: 12, warmup: false }
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false },
+      { targetWeight: 7.5, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Plank',
+    type: 'time',
+    restSec: 90,
+    sets: [
+      { targetSeconds: 60 },
+      { targetSeconds: 60 }
     ]
   }
 ];
