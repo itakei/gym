@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gym">
+<meta name="theme-color" content="#121212">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%231a1a1a'/><circle cx='52' cy='90' r='34' fill='%23ffffff'/><circle cx='128' cy='90' r='34' fill='%23ffffff'/><rect x='42' y='82' width='96' height='16' rx='3' fill='%2366bb6a'/></svg>">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' rx='40' fill='%231a1a1a'/><circle cx='90' cy='80' r='52' fill='%23f0c896'/><path d='M 40 72 Q 90 20 140 72 L 140 50 Q 90 6 40 50 Z' fill='%231f1f1f'/><path d='M 48 64 L 84 57 L 84 70 L 48 77 Z' fill='%23000'/><path d='M 96 57 L 132 64 L 132 77 L 96 70 Z' fill='%23000'/><rect x='49' y='76' width='34' height='27' rx='7' fill='%23fff' stroke='%23000' stroke-width='4'/><rect x='97' y='76' width='34' height='27' rx='7' fill='%23fff' stroke='%23000' stroke-width='4'/><line x1='83' y1='89' x2='97' y2='89' stroke='%23000' stroke-width='4'/><line x1='54' y1='100' x2='77' y2='78' stroke='%2380d4ff' stroke-width='6' stroke-linecap='round'/><line x1='102' y1='100' x2='125' y2='78' stroke='%2380d4ff' stroke-width='6' stroke-linecap='round'/><rect x='32' y='148' width='116' height='9' rx='2' fill='%2366bb6a'/><rect x='14' y='134' width='22' height='37' rx='4' fill='%2366bb6a'/><rect x='144' y='134' width='22' height='37' rx='4' fill='%2366bb6a'/></svg>">
 <title>Gym Logger</title>
 <style>
 :root {
@@ -1017,7 +1021,7 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day C (Lower + Shoulders) at Sri Penaga. Back-to-back day after pull — different muscle groups so it's fine. Two firsts today: BSS finally loaded (5kg DBs) and Deadlift past 40kg.",
+  goal: "Day C (Lower + Shoulders) at Sri Penaga. 2 days rest since pull — fresh legs. Two firsts today: BSS finally loaded (5kg DBs) and Deadlift past 40kg.",
   decision: "Hip thrust set 1 @ 30kg: smooth x10 = stay for 3 sets | grindy = drop to 25 x 10 x 3. BSS 5kg: if both sets clean → +2.5kg per side next time. Deadlift 45x8 set 1: solid = do all 3 | grindy = drop to 42.5.",
   do: [
     "Cycling 5 min warmup first",
@@ -1034,7 +1038,7 @@ const COACH_NOTES = {
     "No grinding BSS — if you can't hit 8 strict reps with 5kg, drop to 2.5kg DBs",
     "No going heavier than 45 on deadlift today — first time past 40 in months, build the pattern"
   ],
-  next: "Wed Apr 22 — Day A (Push week starts): Bench warmup → 70 x 3 x 3 (heavy!), DB HT 35x10, Incline Bench 30x8, Lateral 7.5x12, Plank 70s"
+  next: "Thu Apr 23 — Day A (Push week starts): Bench warmup → 70 x 3 x 3 (heavy!), DB HT 35x10, Incline Bench 30x8, Lateral 7.5x12, Plank 70s"
 };
 
 function toggleCoach() {
@@ -1220,9 +1224,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-20';
+const WORKOUT_DATE = '2026-04-21';
 const WORKOUT_NAME = 'Lower + Shoulders (Day C) — Sri Penaga';
-const BUILD_STAMP = '2026-04-20 13:58 KL';
+const BUILD_STAMP = '2026-04-21 09:31 KL';
 
 const DEFAULT_EXERCISES = [
   {
