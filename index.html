@@ -1021,23 +1021,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull) at ASB. 3 days since last pull — fresh. THE headline today: break the 5-month lat PD stall. Set 1 @ 49 is just warmup; set 2 you load 52kg and pull. 3 weight bumps today (lat PD, hammer curl, sub for triceps).",
-  decision: "Lat PD: set 1 @ 49 x 12 (warmup), then jump to 52 — if you hit 8+ reps that's the stall broken. If 52 grinds at <6 reps → back off to 50.5. Bent over row 20kg: clean form first, no momentum. If 20 feels too heavy with strict form, drop to 17.5.",
+  goal: "Day B (Pull) at Sri Penaga. 2 days since Day C — fresh. THE headline: break the 5-month lat PD stall. Set 1 @ 49 is warmup; set 2 you load 52 and pull. Also 3 weight bumps today (lat PD, seated row, hammer curl, triceps).",
+  decision: "Lat PD: set 1 @ 49 x 12 (warmup), then jump to 52 — 8+ reps = stall broken. If 52 grinds at <6 reps → drop to 50.5. Seated row 30kg: strict form, if momentum creeps in drop to 28.",
   do: [
     "Cycling 5 min warmup",
-    "Lat Pulldown 49 x 12 (treat as warmup) → THEN 52 x 8-10 x 2 working sets",
-    "Bent Over Row (Barbell) 20 x 10 x 3 — bracing core, controlled tempo, pull to lower ribs",
-    "Rear Delt 5kg x 12 x 3 — strict, slow, no body english (recalibrated weight from yesterday's logic)",
+    "Lat Pulldown 49 x 12 (warmup) → THEN 52 x 8-10 x 2 working sets",
+    "Seated Row (Cable) 30 x 12 x 3 — bump from 28 (clean last time), full stretch then squeeze",
+    "Rear Delt 5kg x 12 x 3 — strict, slow, no body english",
     "Hammer Curl 12 x 10 x 3 — bumping from 10 (3 clean sessions earned this)",
-    "Overhead DB Triceps Extension 7.5kg x 12 x 3 — single DB held with both hands, full ROM, ASB sub for cable"
+    "Triceps Extension (Cable) 17 x 12 x 3 — bump from 14 (you beat reps by 2 last time)"
   ],
   dont: [
-    "No bench today — saved for Fri (heavy Day A)",
-    "No shoulder press — you did light yesterday and it's a Day C item",
-    "No staying at 49kg on lat PD — if you do, this stall keeps existing",
-    "No ego row weight — 20kg strict beats 25kg with body swing"
+    "No bench today — saved for Sat (heavy Day A)",
+    "No shoulder press — Day C item",
+    "No staying at 49kg on lat PD — if you do, the stall persists",
+    "No ego-loading the seated row — 30 strict > 35 with body english"
   ],
-  next: "Fri Apr 24 — Day A (Push week peak) at ASB or SP: Bench warmup → 70 x 3 x 3 (HEAVY, the headline), BB Hip Thrust 50 x 10 x 3 (if ASB) or DB HT 35 x 10 (if SP), Lateral 7.5x12, Plank 70s"
+  next: "Sat Apr 25 — Day A (Push week peak): Bench warmup → 70 x 3 x 3 (HEAVY), Hip Thrust (DB 35x10 or BB 50x10 if pad available), Incline Bench 30x8, Lateral 7.5x12, Plank 70s"
 };
 
 function toggleCoach() {
@@ -1223,9 +1223,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-22';
-const WORKOUT_NAME = 'Pull + Accessories (Day B) — ASB';
-const BUILD_STAMP = '2026-04-22 09:23 KL';
+const WORKOUT_DATE = '2026-04-23';
+const WORKOUT_NAME = 'Pull + Accessories (Day B) — Sri Penaga';
+const BUILD_STAMP = '2026-04-22 19:39 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1245,13 +1245,13 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Bent Over Row (Barbell)',
+    name: 'Seated Row (Cable)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 20, targetReps: 10, warmup: false },
-      { targetWeight: 20, targetReps: 10, warmup: false },
-      { targetWeight: 20, targetReps: 10, warmup: false }
+      { targetWeight: 30, targetReps: 12, warmup: false },
+      { targetWeight: 30, targetReps: 12, warmup: false },
+      { targetWeight: 30, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1275,13 +1275,13 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Overhead Triceps Extension (Dumbbell)',
+    name: 'Triceps Extension (Cable)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false },
-      { targetWeight: 7.5, targetReps: 12, warmup: false }
+      { targetWeight: 17, targetReps: 12, warmup: false },
+      { targetWeight: 17, targetReps: 12, warmup: false },
+      { targetWeight: 17, targetReps: 12, warmup: false }
     ]
   }
 ];
