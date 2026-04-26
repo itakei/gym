@@ -1021,23 +1021,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull) at Sri Penaga. 2 days since Day C — fresh. THE headline: break the 5-month lat PD stall. Set 1 @ 49 is warmup; set 2 you load 52 and pull. Also 3 weight bumps today (lat PD, seated row, hammer curl, triceps).",
-  decision: "Lat PD: set 1 @ 49 x 12 (warmup), then jump to 52 — 8+ reps = stall broken. If 52 grinds at <6 reps → drop to 50.5. Seated row 30kg: strict form, if momentum creeps in drop to 28.",
+  goal: "Day A (Push + Posterior) at Sri Penaga, ~45 min. 5-day gap post-conference — back in normally, NOT heavy. Volume bench (62.5 x 5 x 4), DB hip thrust bump (no BB pad here), reclaim 10kg lateral, bring RDL back.",
+  decision: "Bench: if set 1 @ 62.5 feels fast → stay at 62.5, do NOT chase 70 today. Lateral 10kg: if form breaks before rep 6 → drop to 7.5 for sets 2-3. RDL: hinge, don't squat — stop set if back rounds.",
   do: [
     "Cycling 5 min warmup",
-    "Lat Pulldown 49 x 12 (warmup) → THEN 52 x 8-10 x 2 working sets",
-    "Seated Row (Cable) 30 x 12 x 3 — bump from 28 (clean last time), full stretch then squeeze",
-    "Rear Delt 5kg x 12 x 3 — strict, slow, no body english",
-    "Hammer Curl 12 x 10 x 3 — bumping from 10 (3 clean sessions earned this)",
-    "Triceps Extension (Cable) 17 x 12 x 3 — bump from 14 (you beat reps by 2 last time)"
+    "Bench Press 20x10 → 40x5 → 55x3 → 62.5 x 5 x 4 (volume day)",
+    "DB Hip Thrust 22.5 x 12 x 3 — bump from 20 (felt easy at 15 reps last time)",
+    "Lateral Raise 10 x 8 x 3 — break 7.5 plateau, you owned this Mar 15",
+    "Romanian Deadlift 40 x 8 x 3 — bring it back, posterior chain undertrained",
+    "Plank 2 x 60s (skip if at 40 min)"
   ],
   dont: [
-    "No bench today — saved for Sat (heavy Day A)",
-    "No shoulder press — Day C item",
-    "No staying at 49kg on lat PD — if you do, the stall persists",
-    "No ego-loading the seated row — 30 strict > 35 with body english"
+    "No 70kg bench — 5-day gap, ease back first",
+    "No grinding lateral 10kg if form goes — drop weight, keep sets",
+    "No deadlift instead of RDL — RDL is the hinge focus today",
+    "No barbell hip thrust attempts — pad missing at Sri Penaga"
   ],
-  next: "Sat Apr 25 — Day A (Push week peak): Bench warmup → 70 x 3 x 3 (HEAVY), Hip Thrust (DB 35x10 or BB 50x10 if pad available), Incline Bench 30x8, Lateral 7.5x12, Plank 70s"
+  next: "Day B (Pull) — Lat PD push to 52, Seated Row 30, Hammer Curl 12, Triceps Ext 17. 2 rest days minimum before."
 };
 
 function toggleCoach() {
@@ -1224,8 +1224,8 @@ function isTimeBased(name) {
 
 // ============ DATA ============
 const WORKOUT_DATE = '2026-04-23';
-const WORKOUT_NAME = 'Pull + Accessories (Day B) — Sri Penaga';
-const BUILD_STAMP = '2026-04-22 19:39 KL';
+const WORKOUT_NAME = 'Day A — Push + Posterior (Sri Penaga)';
+const BUILD_STAMP = '2026-04-26 11:51 KL';
 
 const DEFAULT_EXERCISES = [
   {
