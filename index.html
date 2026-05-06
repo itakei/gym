@@ -1021,23 +1021,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull + Accessories) at Sri Penaga, ~45 min. Fresh energy, 2 days post Day A. Headline: break the 4-month Lat PD stall at 49 → push 52. Plus 3 weight bumps (Seated Row 30, Hammer Curl 12, Triceps Ext 17).",
-  decision: "Lat PD: set 1 @ 49 x 12 (warmup), set 2 load 52 — fresh today so target 10 reps not 8. If 52 grinds <6 reps → drop to 50.5. Rear delt: stay at 5kg strict, no 7.5 ego attempts (Apr 19's 7.5 was sloppy).",
+  goal: "Day A (Push + Posterior) at Sri Penaga, ~40 min. COMEBACK after 8 days off + flu. Drop ~10% on all working sets, cut volume, NO PR attempts. Today's job: re-establish movement, not chase Apr 26's 62.5x5x4.",
+  decision: "Bench: 57.5 working (-5 from 62.5), 3 sets not 4. If bar slows on rep 3 → rack it. HR check during cycling: if >140 at easy effort → drop bench to 50, skip RDL. Flu drains neural drive for 7-10 days post-symptom — no ego today.",
   do: [
-    "Cycling 5 min warmup",
-    "Lat Pulldown 49 x 12 (warmup) → 52 x 10 x 2 working sets",
-    "Seated Row 30 x 12 x 3 — bump from 28 (clean last time)",
-    "Rear Delt Raise 5 x 12 x 3 — strict, slow, no body english",
-    "Hammer Curl 12 x 10 x 3 — bump from 10 (3 clean sessions earned)",
-    "Triceps Extension (Cable) 17 x 12 x 3 — bump from 14 (you beat reps last time)"
+    "Cycling (Indoor) 7 min — longer warmup, monitor HR",
+    "Bench Press 20 x 10 → 40 x 5 → 55 x 3 (warmups) → 57.5 x 5 x 3 working",
+    "Hip Thrust (DB) 20 x 12 x 3 — down from 22.5",
+    "Romanian Deadlift 35 x 8 x 3 — down from 40",
+    "Lateral Raise 8 x 10 x 3 — down from 10 x 8, control bias",
+    "Plank 60s x 2 — gentle core re-engage"
   ],
   dont: [
-    "No bench today — saved for next Day A",
-    "No shoulder press — Day C item",
-    "No staying at 49 on lat PD — fresh energy means push 52 today",
-    "No rear delt 7.5 attempts — last time form broke, stay at 5 strict"
+    "No bench above 57.5 — flu recovery first, 62.5 returns next Day A",
+    "No grinder reps — rack the bar if rep speed drops",
+    "No Day C lower (deadlift 50 / BSS) — heavy lower too taxing for session 1 back",
+    "No new PRs of any kind today"
   ],
-  next: "Day C (Lower + Shoulders) — barbell hip thrust now doable at Sri Penaga. Deadlift 50, BSS with 5kg DBs, lateral 10 x 8."
+  next: "Day B Pull ~Fri May 8. If today clean → return to Apr 28 loads (Lat PD 52, Seated Row 30, Hammer 12, Tri Ext 17). If today rough → repeat Day B at -10%."
 };
 
 function toggleCoach() {
@@ -1223,65 +1223,67 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-04-28';
-const WORKOUT_NAME = 'Day B — Pull + Accessories (Sri Penaga)';
-const BUILD_STAMP = '2026-04-28 10:17 KL';
+const WORKOUT_DATE = '2026-05-06';
+const WORKOUT_NAME = 'Day A — Push + Posterior (Comeback after flu)';
+const BUILD_STAMP = '2026-05-06 KL';
 
 const DEFAULT_EXERCISES = [
   {
     name: 'Cycling (Indoor)',
     type: 'time',
     restSec: 0,
-    sets: [{ targetSeconds: 300 }]
+    sets: [{ targetSeconds: 420 }]
   },
   {
-    name: 'Lat Pulldown (Cable)',
+    name: 'Bench Press (Barbell)',
+    type: 'weight',
+    restSec: 120,
+    sets: [
+      { targetWeight: 20, targetReps: 10, warmup: true },
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 55, targetReps: 3, warmup: true },
+      { targetWeight: 57.5, targetReps: 5, warmup: false },
+      { targetWeight: 57.5, targetReps: 5, warmup: false },
+      { targetWeight: 57.5, targetReps: 5, warmup: false }
+    ]
+  },
+  {
+    name: 'Hip Thrust (Dumbbell)',
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 49, targetReps: 12, warmup: true },
-      { targetWeight: 52, targetReps: 10, warmup: false },
-      { targetWeight: 52, targetReps: 10, warmup: false }
+      { targetWeight: 20, targetReps: 12, warmup: false },
+      { targetWeight: 20, targetReps: 12, warmup: false },
+      { targetWeight: 20, targetReps: 12, warmup: false }
     ]
   },
   {
-    name: 'Seated Row (Cable)',
+    name: 'Romanian Deadlift (Barbell)',
     type: 'weight',
-    restSec: 90,
+    restSec: 120,
     sets: [
-      { targetWeight: 30, targetReps: 12, warmup: false },
-      { targetWeight: 30, targetReps: 12, warmup: false },
-      { targetWeight: 30, targetReps: 12, warmup: false }
+      { targetWeight: 35, targetReps: 8, warmup: false },
+      { targetWeight: 35, targetReps: 8, warmup: false },
+      { targetWeight: 35, targetReps: 8, warmup: false }
     ]
   },
   {
-    name: 'Rear Delt Raise (Dumbbell)',
-    type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 5, targetReps: 12, warmup: false },
-      { targetWeight: 5, targetReps: 12, warmup: false },
-      { targetWeight: 5, targetReps: 12, warmup: false }
-    ]
-  },
-  {
-    name: 'Hammer Curl (Dumbbell)',
+    name: 'Lateral Raise (Dumbbell)',
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 12, targetReps: 10, warmup: false },
-      { targetWeight: 12, targetReps: 10, warmup: false },
-      { targetWeight: 12, targetReps: 10, warmup: false }
+      { targetWeight: 8, targetReps: 10, warmup: false },
+      { targetWeight: 8, targetReps: 10, warmup: false },
+      { targetWeight: 8, targetReps: 10, warmup: false }
     ]
   },
   {
-    name: 'Triceps Extension (Cable)',
-    type: 'weight',
+    name: 'Plank',
+    type: 'time',
     restSec: 60,
     sets: [
-      { targetWeight: 17, targetReps: 12, warmup: false },
-      { targetWeight: 17, targetReps: 12, warmup: false },
-      { targetWeight: 17, targetReps: 12, warmup: false }
+      { targetSeconds: 60 },
+      { targetSeconds: 60 }
     ]
   }
 ];
