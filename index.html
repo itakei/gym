@@ -1021,23 +1021,23 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day B (Pull + Accessories) at Sri Penaga, ~35 min. Day 2 of comeback (24h after Day A May 6). Light volume — 2 working sets only. All loads at last-clean numbers, NO bumps, NO stall-break attempts.",
-  decision: "Lat PD: stay at 49 today. The 52 attempt waits for next Day B after a clean Day C. Hammer back to 10 not 12, Tri Ext 14 not 17 — earn the bumps with two clean sessions in a row, not 9 days post-flu. Plank fade yesterday (51s→42s) said neural endurance isn't 100% — respect it.",
+  goal: "Day B (Pull + Accessories) at Sri Penaga, ~45 min. Day A May 6 was clean, rest day taken Thu — conditions for stall-break are about as good as they get. Headline: break the 4-month Lat PD stall at 49 → push 52. Plus 3 small bumps (Seated Row 30, Hammer 12, Tri Ext 17).",
+  decision: "Lat PD: 49 x 12 warmup → 52 x 8 set 1. GATE: if 52 grinds (<6 clean reps OR last 2 reps slow & ugly) → drop set 2 to 50.5 x 8. If 52 set 1 is clean → set 2 also 52 but CAP at 8 reps, do NOT chase 10 — stall-break day, not volume day. No rear delt 7.5 — 5 strict is the line.",
   do: [
-    "Cycling (Indoor) 5 min — easy warmup",
-    "Lat Pulldown 49 x 12 (warmup) → 49 x 10 x 2 working — hold the line, no 52",
-    "Seated Row 28 x 12 x 2 — down from planned 30",
-    "Rear Delt Raise 5 x 12 x 2 — strict, no 7.5 attempts",
-    "Hammer Curl 10 x 10 x 2 — down from planned 12",
-    "Triceps Extension (Cable) 14 x 12 x 2 — down from planned 17"
+    "Cycling (Indoor) 5 min warmup",
+    "Lat Pulldown 49 x 12 (warmup) → 52 x 8 x 2 working (gated — see decision)",
+    "Seated Row 30 x 12 x 3 — bump from 28",
+    "Rear Delt Raise 5 x 12 x 3 — strict, slow, no body english",
+    "Hammer Curl 12 x 10 x 3 — bump from 10",
+    "Triceps Extension (Cable) 17 x 12 x 3 — bump from 14"
   ],
   dont: [
-    "No 52 on Lat PD — saved for next Day B",
-    "No third working set on anything — volume cut is the whole point",
+    "No 10-rep chase on Lat PD 52 — 8 is the prescribed cap today",
+    "No rear delt 7.5 — Apr 19 form broke, 5 strict only",
     "No bench / no shoulder press — Day A and Day C items",
-    "No session at all if wake-up HR elevated, bad sleep, or surprise lower-back DOMS from yesterday's RDL — message coach, swap to rest day"
+    "No PR attempts beyond what's listed — small wins, not a hero session"
   ],
-  next: "Day C (Lower + Shoulders) Fri May 8 — DB Hip Thrust 22.5, BSS bodyweight only, Lateral 8, NO deadlift. Then full rest Sat/Sun."
+  next: "Day C (Lower + Shoulders) Sun May 10 — DB Hip Thrust 22.5, BSS bodyweight, Lateral 8, NO deadlift this week. Standard A/B/C rotation resumes."
 };
 
 function toggleCoach() {
@@ -1223,9 +1223,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-05-07';
-const WORKOUT_NAME = 'Day B — Pull (Light, Day 2 comeback)';
-const BUILD_STAMP = '2026-05-07 KL';
+const WORKOUT_DATE = '2026-05-08';
+const WORKOUT_NAME = 'Day B — Pull + Accessories (Sri Penaga)';
+const BUILD_STAMP = '2026-05-08 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1240,8 +1240,8 @@ const DEFAULT_EXERCISES = [
     restSec: 90,
     sets: [
       { targetWeight: 49, targetReps: 12, warmup: true },
-      { targetWeight: 49, targetReps: 10, warmup: false },
-      { targetWeight: 49, targetReps: 10, warmup: false }
+      { targetWeight: 52, targetReps: 8, warmup: false },
+      { targetWeight: 52, targetReps: 8, warmup: false }
     ]
   },
   {
@@ -1249,8 +1249,9 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 90,
     sets: [
-      { targetWeight: 28, targetReps: 12, warmup: false },
-      { targetWeight: 28, targetReps: 12, warmup: false }
+      { targetWeight: 30, targetReps: 12, warmup: false },
+      { targetWeight: 30, targetReps: 12, warmup: false },
+      { targetWeight: 30, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1258,6 +1259,7 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
+      { targetWeight: 5, targetReps: 12, warmup: false },
       { targetWeight: 5, targetReps: 12, warmup: false },
       { targetWeight: 5, targetReps: 12, warmup: false }
     ]
@@ -1267,8 +1269,9 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 10, targetReps: 10, warmup: false },
-      { targetWeight: 10, targetReps: 10, warmup: false }
+      { targetWeight: 12, targetReps: 10, warmup: false },
+      { targetWeight: 12, targetReps: 10, warmup: false },
+      { targetWeight: 12, targetReps: 10, warmup: false }
     ]
   },
   {
@@ -1276,8 +1279,9 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 14, targetReps: 12, warmup: false },
-      { targetWeight: 14, targetReps: 12, warmup: false }
+      { targetWeight: 17, targetReps: 12, warmup: false },
+      { targetWeight: 17, targetReps: 12, warmup: false },
+      { targetWeight: 17, targetReps: 12, warmup: false }
     ]
   }
 ];
