@@ -1021,23 +1021,24 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day C (Lower + Shoulders) at Sri Penaga, ~40 min. Last Day C was Apr 21 — 20 days ago. Headline: FIRST BB hip thrust at this gym. Two clean comeback sessions in the bank, three days of rest — body is fresh. Centerpiece is the BB hip thrust debut at a conservative load.",
-  decision: "BB Hip Thrust: 30 x 8 warmup → 40 x 10 x 3 working. New movement at this gym — pick light over heavy. If form clean and bar moves well, next Day C jumps to 50. SETUP MATTERS: bar on hips (use pad), feet flat, heels drive, brief hold at top. If you can't get setup comfortable in 2 warmups → retreat to DB Hip Thrust 22.5 x 12 x 3 today, try BB again next Day C. NO deadlift — one more session of holding the line; deadlift returns Day C #2.",
+  goal: "Day A (Push) at Sri Penaga, ~40 min, 7:20 AM start. Headline: BENCH 60 — first attempt between Apr 26's 62.5 and comeback's 57.5. Yesterday's BB hip thrust 40x10x3 means NO RDL and NO DB hip thrust today — posterior chain needs to recover. Substituting Chest Fly + Face Pull to fill the slots without restressing hams/glutes/low back.",
+  decision: "Bench 60: warmup 20x10 / 40x5 / 55x3, then 60 x 5 set 1. GATE: if set 1 grinds <4 reps OR last rep ugly → drop set 2 to 57.5 x 5. If 60 x 5 set 1 is clean → set 2 and 3 also at 60. Don't chase 6+ reps — owning 60 x 5 x 3 IS the win. Lateral earned the bump to 10 (two clean sessions at 8) — go 10 x 8.",
   do: [
     "Cycling (Indoor) 5 min warmup",
-    "Hip Thrust (BB) 30 x 8 (warmup) → 40 x 10 x 3 working — NEW MOVEMENT here",
-    "Bulgarian Split Squat bodyweight x 10/leg x 3 — feel the unilateral pattern, no DB load",
-    "Lateral Raise 8 x 10 x 3 — hold the comeback line",
-    "Plank 60s x 2"
+    "Bench Press 20x10 / 40x5 / 55x3 (warmups) → 60 x 5 x 3 working",
+    "Chest Fly (DB) 10 x 12 x 3 — chest accessory to support the bench bump",
+    "Lateral Raise 10 x 8 x 3 — earned the bump",
+    "Face Pull (Cable) 14 x 12 x 3 — upper back / rear delt balance for the pressing",
+    "Plank 45s x 2 — realistic target between your 40 and the 60 aspiration"
   ],
   dont: [
-    "No deadlift — saved for next Day C",
-    "No DB load on BSS — bodyweight only this session",
-    "No lateral 10 attempt — earn it with two clean 8s first",
-    "No bench / no lat PD — wrong day for each",
-    "No grinder reps on BB hip thrust — if form breaks, drop to DB 22.5"
+    "No RDL today — yesterday's BB hip thrust already loaded the hinge",
+    "No DB hip thrust — same chain as yesterday, recovery first",
+    "No bench above 60 — owning 60 x 5 x 3 is the prescription, not a max attempt",
+    "No lateral 12 attempt — 10 is the bump, earn 12 with two clean sessions",
+    "No skipping cycling — 5 min wakes the system at 7:20 AM"
   ],
-  next: "Day A Push Wed/Thu May 13-14 — bench target 60 (between Apr 26's 62.5 and comeback 57.5). RDL 37.5, DB Hip Thrust 22.5, Lateral 8 or 10 depending on today."
+  next: "Day B Pull Thu May 14 — Lat PD 52 (own 8-10 reps), Seated Row 30 (you skipped it last time, earned now), Hammer 12, Tri Ext (need answer: was 21 clean or grindy on May 8?)."
 };
 
 function toggleCoach() {
@@ -1223,9 +1224,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-05-11';
-const WORKOUT_NAME = 'Day C — Lower + Shoulders (Sri Penaga)';
-const BUILD_STAMP = '2026-05-11 KL';
+const WORKOUT_DATE = '2026-05-12';
+const WORKOUT_NAME = 'Day A — Push (Sri Penaga, 7:20 AM)';
+const BUILD_STAMP = '2026-05-12 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1235,24 +1236,26 @@ const DEFAULT_EXERCISES = [
     sets: [{ targetSeconds: 300 }]
   },
   {
-    name: 'Hip Thrust (Barbell)',
+    name: 'Bench Press (Barbell)',
     type: 'weight',
     restSec: 120,
     sets: [
-      { targetWeight: 30, targetReps: 8, warmup: true },
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false },
-      { targetWeight: 40, targetReps: 10, warmup: false }
+      { targetWeight: 20, targetReps: 10, warmup: true },
+      { targetWeight: 40, targetReps: 5, warmup: true },
+      { targetWeight: 55, targetReps: 3, warmup: true },
+      { targetWeight: 60, targetReps: 5, warmup: false },
+      { targetWeight: 60, targetReps: 5, warmup: false },
+      { targetWeight: 60, targetReps: 5, warmup: false }
     ]
   },
   {
-    name: 'Bulgarian Split Squat',
+    name: 'Chest Fly (Dumbbell)',
     type: 'weight',
-    restSec: 90,
+    restSec: 60,
     sets: [
-      { targetWeight: 0, targetReps: 10, warmup: false },
-      { targetWeight: 0, targetReps: 10, warmup: false },
-      { targetWeight: 0, targetReps: 10, warmup: false }
+      { targetWeight: 10, targetReps: 12, warmup: false },
+      { targetWeight: 10, targetReps: 12, warmup: false },
+      { targetWeight: 10, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1260,9 +1263,19 @@ const DEFAULT_EXERCISES = [
     type: 'weight',
     restSec: 60,
     sets: [
-      { targetWeight: 8, targetReps: 10, warmup: false },
-      { targetWeight: 8, targetReps: 10, warmup: false },
-      { targetWeight: 8, targetReps: 10, warmup: false }
+      { targetWeight: 10, targetReps: 8, warmup: false },
+      { targetWeight: 10, targetReps: 8, warmup: false },
+      { targetWeight: 10, targetReps: 8, warmup: false }
+    ]
+  },
+  {
+    name: 'Face Pull (Cable)',
+    type: 'weight',
+    restSec: 60,
+    sets: [
+      { targetWeight: 14, targetReps: 12, warmup: false },
+      { targetWeight: 14, targetReps: 12, warmup: false },
+      { targetWeight: 14, targetReps: 12, warmup: false }
     ]
   },
   {
@@ -1270,8 +1283,8 @@ const DEFAULT_EXERCISES = [
     type: 'time',
     restSec: 60,
     sets: [
-      { targetSeconds: 60 },
-      { targetSeconds: 60 }
+      { targetSeconds: 45 },
+      { targetSeconds: 45 }
     ]
   }
 ];
