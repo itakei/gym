@@ -1021,24 +1021,24 @@ function saveNewGym() {
 
 // ============ COACH NOTES ============
 const COACH_NOTES = {
-  goal: "Day A (Push) at Sri Penaga, ~40 min, 7:20 AM start. Headline: BENCH 60 — first attempt between Apr 26's 62.5 and comeback's 57.5. Yesterday's BB hip thrust 40x10x3 means NO RDL and NO DB hip thrust today — posterior chain needs to recover. Substituting Chest Fly + Face Pull to fill the slots without restressing hams/glutes/low back.",
-  decision: "Bench 60: warmup 20x10 / 40x5 / 55x3, then 60 x 5 set 1. GATE: if set 1 grinds <4 reps OR last rep ugly → drop set 2 to 57.5 x 5. If 60 x 5 set 1 is clean → set 2 and 3 also at 60. Don't chase 6+ reps — owning 60 x 5 x 3 IS the win. Lateral earned the bump to 10 (two clean sessions at 8) — go 10 x 8.",
+  goal: "Day A (Push + Posterior) at Sri Penaga. 4 days off after May 11 Day C — fully recovered, no recovery debt. Headline: BENCH 60 — the bridge between Apr 26's 62.5 and the post-flu 57.5. Full posterior chain back in (DB Hip Thrust + RDL) — May 12 plan that skipped them never happened.",
+  decision: "Bench 60: warmup 20x10 / 40x5 / 55x3, then 60 x 5 set 1. GATE: if set 1 grinds <4 reps OR last rep ugly → drop set 2-3 to 57.5 x 5. If 60 x 5 set 1 is clean → all three sets at 60. Don't chase 6+ reps — owning 60 x 5 x 3 IS the win, that earns 62.5 next Day A. DB Hip Thrust back to 22.5 (Apr 26 baseline). RDL back to 40 (Apr 26 baseline). Lateral stays at 10 (was the plan you didn't get to do).",
   do: [
     "Cycling (Indoor) 5 min warmup",
     "Bench Press 20x10 / 40x5 / 55x3 (warmups) → 60 x 5 x 3 working",
-    "Chest Fly (DB) 10 x 12 x 3 — chest accessory to support the bench bump",
-    "Lateral Raise 10 x 8 x 3 — earned the bump",
-    "Face Pull (Cable) 14 x 12 x 3 — upper back / rear delt balance for the pressing",
-    "Plank 45s x 2 — realistic target between your 40 and the 60 aspiration"
+    "Hip Thrust (DB) 22.5 x 12 x 3 — back to pre-flu baseline",
+    "Romanian Deadlift 40 x 8 x 3 — back to pre-flu baseline",
+    "Lateral Raise 10 x 8 x 3 — the bump you earned",
+    "Plank 45s x 2"
   ],
   dont: [
-    "No RDL today — yesterday's BB hip thrust already loaded the hinge",
-    "No DB hip thrust — same chain as yesterday, recovery first",
     "No bench above 60 — owning 60 x 5 x 3 is the prescription, not a max attempt",
+    "No RDL above 40 — match Apr 26, don't try to leapfrog past the flu",
     "No lateral 12 attempt — 10 is the bump, earn 12 with two clean sessions",
-    "No skipping cycling — 5 min wakes the system at 7:20 AM"
+    "No DB hip thrust above 22.5 — the dumbbells max out here at Sri Penaga anyway",
+    "No skipping cycling — 5 min wakes the system"
   ],
-  next: "Day B Pull Thu May 14 — Lat PD 52 (own 8-10 reps), Seated Row 30 (you skipped it last time, earned now), Hammer 12, Tri Ext (need answer: was 21 clean or grindy on May 8?)."
+  next: "Day B Pull (Sun May 17) — Lat PD 52 (own 10 reps, you got 8 on May 8), Seated Row 30 (you've been at 28-29, due for the bump), Hammer 12, Tri Ext 21 (or report if it was grindy)."
 };
 
 function toggleCoach() {
@@ -1224,9 +1224,9 @@ function isTimeBased(name) {
 }
 
 // ============ DATA ============
-const WORKOUT_DATE = '2026-05-12';
-const WORKOUT_NAME = 'Day A — Push (Sri Penaga, 7:20 AM)';
-const BUILD_STAMP = '2026-05-12 KL';
+const WORKOUT_DATE = '2026-05-15';
+const WORKOUT_NAME = 'Day A — Push + Posterior (Sri Penaga)';
+const BUILD_STAMP = '2026-05-15 KL';
 
 const DEFAULT_EXERCISES = [
   {
@@ -1249,13 +1249,23 @@ const DEFAULT_EXERCISES = [
     ]
   },
   {
-    name: 'Chest Fly (Dumbbell)',
+    name: 'Hip Thrust (Dumbbell)',
     type: 'weight',
-    restSec: 60,
+    restSec: 90,
     sets: [
-      { targetWeight: 10, targetReps: 12, warmup: false },
-      { targetWeight: 10, targetReps: 12, warmup: false },
-      { targetWeight: 10, targetReps: 12, warmup: false }
+      { targetWeight: 22.5, targetReps: 12, warmup: false },
+      { targetWeight: 22.5, targetReps: 12, warmup: false },
+      { targetWeight: 22.5, targetReps: 12, warmup: false }
+    ]
+  },
+  {
+    name: 'Romanian Deadlift (Barbell)',
+    type: 'weight',
+    restSec: 90,
+    sets: [
+      { targetWeight: 40, targetReps: 8, warmup: false },
+      { targetWeight: 40, targetReps: 8, warmup: false },
+      { targetWeight: 40, targetReps: 8, warmup: false }
     ]
   },
   {
@@ -1266,16 +1276,6 @@ const DEFAULT_EXERCISES = [
       { targetWeight: 10, targetReps: 8, warmup: false },
       { targetWeight: 10, targetReps: 8, warmup: false },
       { targetWeight: 10, targetReps: 8, warmup: false }
-    ]
-  },
-  {
-    name: 'Face Pull (Cable)',
-    type: 'weight',
-    restSec: 60,
-    sets: [
-      { targetWeight: 14, targetReps: 12, warmup: false },
-      { targetWeight: 14, targetReps: 12, warmup: false },
-      { targetWeight: 14, targetReps: 12, warmup: false }
     ]
   },
   {
